@@ -47,7 +47,17 @@ public static class Ui
 
     public static SolidColorBrush Accent() => Brush(SettingsStore.Instance.Config.Panel.Accent, "#3B78E0");
 
-    public static SolidColorBrush PanelBackground() => Brush(SettingsStore.Instance.Config.Panel.Background, "#171923");
+    public static SolidColorBrush PanelBackground() => Brush(SettingsStore.Instance.Config.Panel.Background, "#283851");
+
+    public static SolidColorBrush PanelCurrent() => ShadePanel(12, 11, 15);
+
+    public static SolidColorBrush PanelPressed() => ShadePanel(22, 20, 28);
+
+    static SolidColorBrush ShadePanel(int r, int g, int b)
+    {
+        var color = PanelBackground().Color;
+        return Brush($"#{Math.Max(0, color.R - r):X2}{Math.Max(0, color.G - g):X2}{Math.Max(0, color.B - b):X2}");
+    }
 
     public static SolidColorBrush PanelText() =>
         SettingsStore.Instance.Config.Panel.DarkMode ? Text : Brush("#1B1D24");

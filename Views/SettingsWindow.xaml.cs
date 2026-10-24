@@ -239,7 +239,7 @@ public partial class SettingsWindow : Window
 
     void PaintSwatch(string hex)
     {
-        ColorSwatch.Background = Ui.Brush(hex, "#171923");
+        ColorSwatch.Background = Ui.Brush(hex, "#283851");
     }
 
     void SaveMenu()
@@ -361,7 +361,7 @@ public partial class SettingsWindow : Window
 
     void Color_Click(object sender, RoutedEventArgs e)
     {
-        var current = Ui.Parse(SettingsStore.Instance.Config.Panel.Background, System.Windows.Media.Color.FromRgb(0x17, 0x19, 0x23));
+        var current = Ui.Parse(SettingsStore.Instance.Config.Panel.Background, System.Windows.Media.Color.FromRgb(0x28, 0x38, 0x51));
         using var dialog = new System.Windows.Forms.ColorDialog
         {
             Color = System.Drawing.Color.FromArgb(current.R, current.G, current.B),
@@ -504,7 +504,8 @@ public partial class SettingsWindow : Window
 
     void Element_Selected(object sender, SelectionChangedEventArgs e) => UpdateEditButton();
 
-    void UpdateEditButton() => EditElementButton.IsEnabled = ElementList.SelectedItem is PanelItem { Kind: PanelKinds.Launcher };
+    void UpdateEditButton() => EditElementButton.IsEnabled =
+        ElementList.SelectedItem is PanelItem { Kind: PanelKinds.Launcher or PanelKinds.Separator };
 
     Point? _press;
     PanelItem? _dragItem;
@@ -606,7 +607,13 @@ public partial class SettingsWindow : Window
 
     void Edit_Click(object sender, RoutedEventArgs e)
     {
-        if (ElementList.SelectedItem is not PanelItem item || item.Kind != PanelKinds.Launcher) return;
+        if (ElementList.SelectedItem is not PanelItem item) return;
+        if (item.Kind == PanelKinds.Separator)
+        {
+            Dialogs.SeparatorProperties(this, item);
+            return;
+        }
+        if (item.Kind != PanelKinds.Launcher) return;
         var app = Dialogs.Pick(this);
         if (app == null) return;
         item.Label = app.Name;

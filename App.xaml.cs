@@ -10,18 +10,11 @@ namespace WindowsWhisker;
 public partial class App : Application
 {
     Mutex? _mutex;
-    int _errors;
 
     protected override void OnStartup(StartupEventArgs e)
     {
+        Log.Install(this);
         base.OnStartup(e);
-        DispatcherUnhandledException += (_, args) =>
-        {
-            Log.Error("ui", args.Exception);
-            if (_errors++ < 2)
-                MessageBox.Show(args.Exception.Message, "Windows Whisker");
-            args.Handled = true;
-        };
 
         if (e.Args.Any(a => a.Equals("--probe-desktops", StringComparison.OrdinalIgnoreCase)))
         {

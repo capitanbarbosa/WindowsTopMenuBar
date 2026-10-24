@@ -248,6 +248,11 @@ public sealed class SettingsStore
             item.WorkingDirectory ??= "";
             item.IconPath ??= "";
             item.Kind ??= PanelKinds.Separator;
+            if (item.Kind == PanelKinds.Separator)
+            {
+                if (item.Style is not ("Separator" or "Transparent" or "Handle" or "Dots"))
+                    item.Style = "Separator";
+            }
         }
         if (config.Panel.AutoHide)
             config.Panel.ReserveSpace = false;

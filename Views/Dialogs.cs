@@ -124,6 +124,60 @@ public static class Dialogs
         return chosen;
     }
 
+    public static void SeparatorProperties(Window? owner, PanelItem item)
+    {
+        var window = Create(owner, "Separator", 320, 240);
+        var styleBox = new ComboBox { Width = 160, HorizontalAlignment = HorizontalAlignment.Left };
+        foreach (var style in new[] { "Separator", "Transparent", "Handle", "Dots" })
+            styleBox.Items.Add(new ComboBoxItem { Content = style, Tag = style });
+        foreach (ComboBoxItem choice in styleBox.Items)
+        {
+            if ((choice.Tag as string) == item.Style)
+                styleBox.SelectedItem = choice;
+        }
+        if (styleBox.SelectedIndex < 0) styleBox.SelectedIndex = 0;
+        var expand = new CheckBox { Content = "Expand", IsChecked = item.Expand, Margin = new Thickness(0, 8, 0, 0) };
+
+        void Save()
+        {
+            item.Style = (styleBox.SelectedItem as ComboBoxItem)?.Tag as string ?? "Separator";
+            item.Expand = expand.IsChecked == true;
+            SettingsStore.Instance.Update(_ => { }, ConfigArea.PanelItems);
+        }
+
+        styleBox.SelectionChanged += (_, _) => Save();
+        expand.Click += (_, _) => Save();
+
+        var body = new StackPanel { Margin = new Thickness(16, 12, 16, 8) };
+        body.Children.Add(new TextBlock { Text = "Appearance", Style = (Style)Application.Current.FindResource("GroupHeader") });
+        var styleRow = new Grid { Margin = new Thickness(0, 4, 0, 0) };
+        styleRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(80) });
+        styleRow.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        var styleLabel = new TextBlock { Text = "Style:", Style = (Style)Application.Current.FindResource("FieldLabel") };
+        Grid.SetColumn(styleBox, 1);
+        styleRow.Children.Add(styleLabel);
+        styleRow.Children.Add(styleBox);
+        body.Children.Add(styleRow);
+        body.Children.Add(expand);
+
+        var buttons = new DockPanel { Margin = new Thickness(12, 0, 12, 12), LastChildFill = false };
+        var help = new Button { Content = "Help", Width = 84 };
+        var close = new Button { Content = "Close", Width = 90, IsCancel = true, IsDefault = true };
+        DockPanel.SetDock(help, Dock.Left);
+        DockPanel.SetDock(close, Dock.Right);
+        buttons.Children.Add(help);
+        buttons.Children.Add(close);
+        help.Click += (_, _) => Help(window);
+        close.Click += (_, _) => window.Close();
+
+        var root = new DockPanel();
+        DockPanel.SetDock(buttons, Dock.Bottom);
+        root.Children.Add(buttons);
+        root.Children.Add(body);
+        window.Content = root;
+        window.ShowDialog();
+    }
+
     public static void AddPanelItems(Window? owner, Action<string> add)
     {
         var window = Create(owner, "Add New Items", 480, 540);
@@ -235,6 +289,7 @@ public static class Dialogs
                    "Add launchers from the panel menu, from Panel settings, or by right-clicking an application and choosing Pin to panel. You can also drag an application out of the menu onto the bar.\n\n" +
                    "Alt+F1 opens the application menu. The menu follows the Whisker options: icons, list, or tree, favorites, recently used, and the session buttons along the bottom.\n\n" +
                    "The desktop shifter is the row of numbered desktops. Click one to switch, scroll to move between them, and right-click to add, rename, or remove a desktop.\n\n" +
+                   "Crashes and unexpected errors are written to %AppData%\\WindowsWhisker\\crash.txt. Everyday errors go in log.txt next to it. Right-click the bar and choose Open crash log to view the latest crash.\n\n" +
                    "Quit from the button in the application menu, or from the panel's right-click menu. That gives the reserved space back to Windows.",
             TextWrapping = TextWrapping.Wrap,
             Foreground = Ui.Text,

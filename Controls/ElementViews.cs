@@ -33,6 +33,8 @@ public static class ElementViews
     public static void ShowItemMenu(PanelItem item, PanelActions actions, FrameworkElement anchor)
     {
         var menu = new ContextMenu();
+        if (item.Kind == PanelKinds.Separator)
+            menu.Items.Add(Entry("Properties", () => Dialogs.SeparatorProperties(actions.Owner(), item)));
         if (item.Kind == PanelKinds.Launcher)
             menu.Items.Add(Entry("Change application…", () => actions.ChangeLauncher(item)));
         menu.Items.Add(Entry("Move left", () => actions.Move(item, -1)));
@@ -80,26 +82,20 @@ public static class ElementViews
     static FrameworkElement LauncherButton(PanelItem item, PanelActions actions, bool vertical)
     {
         var button = Ui.Flat();
-        var row = new StackPanel
-        {
-            Orientation = Orientation.Horizontal,
-            VerticalAlignment = VerticalAlignment.Center
-        };
         double iconSize = Ui.PanelIcon();
         var icon = IconService.Get(string.IsNullOrWhiteSpace(item.IconPath) ? item.Target : item.IconPath, item.IconIndex, (int)Math.Ceiling(iconSize));
-        if (icon != null)
-            row.Children.Add(new Image { Source = icon, Width = iconSize, Height = iconSize, Margin = new Thickness(0, 0, vertical ? 0 : 6, 0) });
-        if (!vertical)
-        {
-            row.Children.Add(new TextBlock
+        button.Content = icon != null
+            ? new Image { Source = icon, Width = iconSize, Height = iconSize }
+            : new TextBlock
             {
-                Text = string.IsNullOrWhiteSpace(item.Label) ? "App" : item.Label,
+                Text = (string.IsNullOrWhiteSpace(item.Label) ? "A" : item.Label)[0].ToString(),
                 Foreground = Ui.PanelText(),
-                VerticalAlignment = VerticalAlignment.Center,
-                FontSize = 12
-            });
-        }
-        button.Content = row;
+                FontWeight = FontWeights.SemiBold,
+                FontSize = 12,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+        button.Padding = new Thickness(6, 0, 6, 0);
         button.ToolTip = string.IsNullOrWhiteSpace(item.Label) ? item.Target : item.Label;
         button.Click += (_, _) =>
         {
@@ -186,27 +182,93 @@ public static class ElementViews
 
     static FrameworkElement Separator(PanelItem item, PanelActions actions, bool vertical)
     {
-        var line = new Grid
+        bool expand = item.Expand;
+        double compact = item.Style is "Handle" or "Dots" ? 16 : 12;
+        var host = new Grid
         {
-            Width = vertical ? double.NaN : 12,
-            Height = vertical ? 12 : double.NaN,
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch,
+            MinWidth = vertical ? 0 : 8,
+            MinHeight = vertical ? 8 : 0,
+            Width = vertical || expand ? double.NaN : compact,
+            Height = !vertical || expand ? double.NaN : compact,
             Background = Brushes.Transparent,
-            ToolTip = "Separator",
-            Children =
+            Cursor = Cursors.Hand,
+            ToolTip = "Separator"
+        };
+        var mark = SeparatorMark(item.Style, vertical);
+        mark.IsHitTestVisible = false;
+        host.Children.Add(mark);
+        AttachItemMenu(host, item, actions);
+        host.MouseLeftButtonDown += (_, e) =>
+        {
+            if (e.ClickCount == 2)
             {
-                new Border
-                {
-                    Width = vertical ? 18 : 1,
-                    Height = vertical ? 1 : 18,
-                    Background = Ui.Line,
-                    HorizontalAlignment = HorizontalAlignment.Center,
-                    VerticalAlignment = VerticalAlignment.Center,
-                    IsHitTestVisible = false
-                }
+                Dialogs.SeparatorProperties(actions.Owner(), item);
+                e.Handled = true;
             }
         };
-        AttachItemMenu(line, item, actions);
-        return line;
+        return host;
+    }
+
+    static FrameworkElement SeparatorMark(string? style, bool vertical)
+    {
+        return style switch
+        {
+            "Transparent" => new Border { Background = Brushes.Transparent },
+            "Handle" => HandleMark(vertical),
+            "Dots" => DotsMark(vertical),
+            _ => new Border
+            {
+                Width = vertical ? 18 : 1,
+                Height = vertical ? 1 : 18,
+                Background = Ui.Line,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            }
+        };
+    }
+
+    static FrameworkElement HandleMark(bool vertical)
+    {
+        var row = new StackPanel
+        {
+            Orientation = vertical ? Orientation.Vertical : Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        for (int i = 0; i < 3; i++)
+        {
+            row.Children.Add(new Border
+            {
+                Width = vertical ? 12 : 1,
+                Height = vertical ? 1 : 12,
+                Margin = vertical ? new Thickness(0, 1, 0, 1) : new Thickness(1, 0, 1, 0),
+                Background = Ui.Muted
+            });
+        }
+        return row;
+    }
+
+    static FrameworkElement DotsMark(bool vertical)
+    {
+        var row = new StackPanel
+        {
+            Orientation = vertical ? Orientation.Vertical : Orientation.Horizontal,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        for (int i = 0; i < 3; i++)
+        {
+            row.Children.Add(new System.Windows.Shapes.Ellipse
+            {
+                Width = 3,
+                Height = 3,
+                Margin = vertical ? new Thickness(0, 2, 0, 2) : new Thickness(2, 0, 2, 0),
+                Fill = Ui.Muted
+            });
+        }
+        return row;
     }
 
     static void AttachItemMenu(FrameworkElement element, PanelItem item, PanelActions actions)
@@ -499,8 +561,9 @@ public sealed class DesktopShifterView : StackPanel
         _actions = actions;
         _vertical = vertical;
         Orientation = vertical ? Orientation.Vertical : Orientation.Horizontal;
-        VerticalAlignment = VerticalAlignment.Center;
-        Margin = new Thickness(4, 0, 4, 0);
+        HorizontalAlignment = vertical ? HorizontalAlignment.Stretch : HorizontalAlignment.Left;
+        VerticalAlignment = vertical ? VerticalAlignment.Center : VerticalAlignment.Stretch;
+        Margin = new Thickness(vertical ? 0 : 4, vertical ? 4 : 0, vertical ? 0 : 4, vertical ? 4 : 0);
         MouseWheel += OnWheel;
         _timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(450) };
         _timer.Tick += (_, _) => Refresh();
@@ -563,29 +626,52 @@ public sealed class DesktopShifterView : StackPanel
 
     Border MakeCell(DesktopInfo desktop)
     {
+        var label = new TextBlock
+        {
+            FontSize = 13,
+            FontWeight = FontWeights.Normal,
+            Foreground = Ui.PanelText(),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = new Thickness(_vertical ? 4 : 10, 0, _vertical ? 4 : 10, 0),
+            TextTrimming = TextTrimming.CharacterEllipsis,
+            IsHitTestVisible = false
+        };
+        var underline = new Border
+        {
+            Height = _vertical ? double.NaN : 2,
+            Width = _vertical ? 2 : double.NaN,
+            HorizontalAlignment = _vertical ? HorizontalAlignment.Left : HorizontalAlignment.Stretch,
+            VerticalAlignment = _vertical ? VerticalAlignment.Stretch : VerticalAlignment.Bottom,
+            Background = Brushes.Transparent,
+            SnapsToDevicePixels = true,
+            IsHitTestVisible = false
+        };
+        var host = new Grid();
+        host.Children.Add(label);
+        host.Children.Add(underline);
         var cell = new Border
         {
-            MinWidth = _vertical ? 22 : 28,
+            MinWidth = _vertical ? 20 : 28,
             MaxWidth = _vertical ? 48 : 88,
-            Height = _vertical ? 26 : 22,
-            Padding = new Thickness(_vertical ? 2 : 6, 0, _vertical ? 2 : 6, 0),
-            Margin = new Thickness(2, 0, 2, 0),
-            CornerRadius = new CornerRadius(3),
+            Padding = new Thickness(0),
+            Margin = new Thickness(_vertical ? 0 : 1, _vertical ? 1 : 0, _vertical ? 0 : 1, _vertical ? 1 : 0),
+            Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
-            VerticalAlignment = VerticalAlignment.Center,
+            HorizontalAlignment = _vertical ? HorizontalAlignment.Stretch : HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Stretch,
+            SnapsToDevicePixels = true,
             Cursor = Cursors.Hand,
             Tag = desktop.Id,
             ToolTip = desktop.Name,
-            Child = new TextBlock
-            {
-                FontSize = 12,
-                FontWeight = FontWeights.SemiBold,
-                Foreground = Brushes.White,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center,
-                TextTrimming = TextTrimming.CharacterEllipsis,
-                IsHitTestVisible = false
-            }
+            Child = host
+        };
+        cell.MouseEnter += (_, _) => Shade(cell);
+        cell.MouseLeave += (_, _) => Shade(cell);
+        cell.MouseLeftButtonDown += (_, e) =>
+        {
+            Shade(cell);
+            e.Handled = true;
         };
         cell.MouseLeftButtonUp += (_, e) =>
         {
@@ -594,6 +680,7 @@ public sealed class DesktopShifterView : StackPanel
                 try { VirtualDesktopService.Instance.SwitchTo(id); }
                 catch (Exception ex) { Dialogs.Alert(_actions.Owner(), ex.Message); }
             }
+            Shade(cell);
             e.Handled = true;
         };
         cell.MouseRightButtonUp += (_, e) =>
@@ -608,13 +695,25 @@ public sealed class DesktopShifterView : StackPanel
     {
         cell.Tag = desktop.Id;
         cell.ToolTip = desktop.Name;
-        cell.Background = desktop.IsCurrent ? Ui.Accent() : Ui.Brush("#2A3144");
         cell.BorderThickness = new Thickness(0);
-        if (cell.Child is TextBlock label)
+        if (cell.Child is Grid grid && grid.Children[0] is TextBlock label)
         {
             label.Text = desktop.Badge;
-            label.Foreground = Brushes.White;
+            label.Foreground = Ui.PanelText();
         }
+        Shade(cell);
+    }
+
+    void Shade(Border cell)
+    {
+        bool current = cell.Tag is Guid id && _desktops.Any(d => d.Id == id && d.IsCurrent);
+        bool hover = cell.IsMouseOver;
+        bool pressed = hover && Mouse.LeftButton == MouseButtonState.Pressed;
+        cell.Background = pressed ? Ui.PanelPressed()
+            : current || hover ? Ui.PanelCurrent()
+            : Brushes.Transparent;
+        if (cell.Child is Grid grid && grid.Children[1] is Border underline)
+            underline.Background = current ? Ui.Accent() : Brushes.Transparent;
     }
 
     void ShowMenu(Guid id, FrameworkElement anchor)

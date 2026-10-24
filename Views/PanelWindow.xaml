@@ -11,7 +11,7 @@
         SnapsToDevicePixels="True"
         TextOptions.TextFormattingMode="Display"
         FontFamily="Segoe UI"
-        Background="#171923">
+        Background="#283851">
     <Border x:Name="Frame" Background="Transparent" BorderBrush="#66000000" BorderThickness="0,0,0,1" ClipToBounds="True">
         <controls:StripPanel x:Name="Strip" Background="Transparent"/>
     </Border>

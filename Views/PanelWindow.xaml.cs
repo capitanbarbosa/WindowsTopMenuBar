@@ -289,7 +289,8 @@ public partial class PanelWindow : Window
             slot.Children.Add(ElementViews.Create(item, _actions, vertical));
             var overlay = BuildOverlay(item);
             slot.Children.Add(overlay);
-            if (item.Kind is PanelKinds.TaskList or PanelKinds.Spacer)
+            if (item.Kind is PanelKinds.TaskList or PanelKinds.Spacer ||
+                (item.Kind == PanelKinds.Separator && item.Expand))
                 StripPanel.SetFlex(slot, true);
             HookDrag(slot, overlay);
             Strip.Children.Add(slot);
@@ -702,6 +703,7 @@ public partial class PanelWindow : Window
         add.Items.Add(Item("Show desktop", () => AddKind(PanelKinds.ShowDesktop)));
         menu.Items.Add(add);
         menu.Items.Add(new Separator());
+        menu.Items.Add(Item("Open crash log", Log.OpenLogs));
         menu.Items.Add(Item("Quit", Quit));
         menu.IsOpen = true;
     }

@@ -22,7 +22,7 @@ public static class PanelPlugins
     public static IReadOnlyList<PanelPlugin> All { get; } =
     [
         new(PanelKinds.Launcher, "Launcher", "Program launcher. Pick an application to pin on the bar.", "\uE7C3"),
-        new(PanelKinds.Separator, "Separator", "Adds a separator between panel items.", "\uE738"),
+        new(PanelKinds.Separator, "Separator", "A line that expands to fill the space between panel items.", "\uE738"),
         new(PanelKinds.Spacer, "Spacer", "Adds an empty space between panel items.", "\uE76F"),
         new(PanelKinds.Clipboard, "Clipboard", "Shortcut that opens Windows clipboard history.", "\uE8C8"),
         new(PanelKinds.Menu, "Applications Menu", "The Whisker-style application menu.", "\uE700"),
@@ -71,7 +71,7 @@ public sealed class PanelConfig
     public string MonitorDevice { get; set; } = "";
     public bool DarkMode { get; set; } = true;
     public string BackgroundStyle { get; set; } = "Solid";
-    public string Background { get; set; } = "#171923";
+    public string Background { get; set; } = "#283851";
     public string Accent { get; set; } = "#3B78E0";
     public bool AutoIconSize { get; set; } = true;
     public int OpacityEnter { get; set; } = 100;
@@ -97,6 +97,8 @@ public sealed class PanelItem
     public string WorkingDirectory { get; set; } = "";
     public string IconPath { get; set; } = "";
     public int IconIndex { get; set; }
+    public string Style { get; set; } = "Separator";
+    public bool Expand { get; set; } = true;
 
     public string Summary => Kind switch
     {

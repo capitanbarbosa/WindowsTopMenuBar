@@ -1,0 +1,473 @@
+<Window x:Class="WindowsWhisker.Views.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Whisker Menu"
+        Width="720" Height="660"
+        MinWidth="640" MinHeight="520"
+        WindowStartupLocation="CenterScreen"
+        Background="#2C2E33"
+        Foreground="White"
+        TextElement.Foreground="White"
+        FontFamily="Segoe UI">
+    <DockPanel>
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="12,10,12,0">
+            <ToggleButton x:Name="TabPanel" Content="Panel" Style="{StaticResource TabToggle}" Tag="panel" Click="Tab_Click"/>
+            <ToggleButton x:Name="TabGeneral" Content="General" Style="{StaticResource TabToggle}" Tag="general" Click="Tab_Click"/>
+            <ToggleButton x:Name="TabAppearance" Content="Appearance" Style="{StaticResource TabToggle}" Tag="appearance" Click="Tab_Click"/>
+            <ToggleButton x:Name="TabBehavior" Content="Behavior" Style="{StaticResource TabToggle}" Tag="behavior" Click="Tab_Click"/>
+            <ToggleButton x:Name="TabCommands" Content="Commands" Style="{StaticResource TabToggle}" Tag="commands" Click="Tab_Click"/>
+            <ToggleButton x:Name="TabSearch" Content="Search Actions" Style="{StaticResource TabToggle}" Tag="search" Click="Tab_Click"/>
+        </StackPanel>
+
+        <Border DockPanel.Dock="Bottom" BorderBrush="#3E4252" BorderThickness="0,1,0,0" Padding="12,10">
+            <DockPanel>
+                <Button DockPanel.Dock="Right" Content="Close" Width="96" Click="Close_Click" IsCancel="True"/>
+                <Button Content="Help" Width="84" HorizontalAlignment="Left" Click="Help_Click"/>
+            </DockPanel>
+        </Border>
+
+        <Grid Margin="0,6,0,0">
+            <ScrollViewer x:Name="PagePanel" VerticalScrollBarVisibility="Auto">
+                <StackPanel Margin="18,8,18,12">
+                    <Grid Margin="0,0,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Profiles:" Style="{StaticResource FieldLabel}"/>
+                        <Button Grid.Column="1" Content="Backup and restore" HorizontalAlignment="Right" Padding="12,4" Click="Backup_Click"/>
+                    </Grid>
+                    <Grid Margin="0,0,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <ComboBox x:Name="ProfileBoxPanel" SelectionChanged="Profile_Changed"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="8,0,0,0">
+                            <Button Content="+" Width="32" Click="ProfileAdd_Click"/>
+                            <Button Content="−" Width="32" Margin="4,0,0,0" Click="ProfileRemove_Click"/>
+                        </StackPanel>
+                    </Grid>
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
+                        <ToggleButton x:Name="PanelTabDisplay" Content="Display" Style="{StaticResource TabToggle}" Tag="display" Click="PanelSub_Click"/>
+                        <ToggleButton x:Name="PanelTabLook" Content="Appearance" Style="{StaticResource TabToggle}" Tag="look" Click="PanelSub_Click"/>
+                        <ToggleButton x:Name="PanelTabItems" Content="Items" Style="{StaticResource TabToggle}" Tag="items" Click="PanelSub_Click"/>
+                    </StackPanel>
+
+                    <StackPanel x:Name="PanelPageDisplay">
+                        <TextBlock Text="General" Style="{StaticResource GroupHeader}"/>
+                        <Grid Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Mode:" Style="{StaticResource FieldLabel}"/>
+                            <ComboBox x:Name="ModeBox" Grid.Column="1" Width="220" HorizontalAlignment="Left" SelectionChanged="Mode_Changed">
+                                <ComboBoxItem Content="Horizontal" Tag="Horizontal"/>
+                                <ComboBoxItem Content="Vertical" Tag="Vertical"/>
+                                <ComboBoxItem Content="Deskbar" Tag="Deskbar"/>
+                            </ComboBox>
+                        </Grid>
+                        <Grid Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Position:" Style="{StaticResource FieldLabel}"/>
+                            <ComboBox x:Name="EdgeBox" Grid.Column="1" Width="220" HorizontalAlignment="Left" SelectionChanged="Geometry_Changed">
+                                <ComboBoxItem Content="Top" Tag="Top"/>
+                                <ComboBoxItem Content="Bottom" Tag="Bottom"/>
+                                <ComboBoxItem Content="Left" Tag="Left"/>
+                                <ComboBoxItem Content="Right" Tag="Right"/>
+                            </ComboBox>
+                        </Grid>
+                        <Grid Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Monitor:" Style="{StaticResource FieldLabel}"/>
+                            <ComboBox x:Name="MonitorBox" Grid.Column="1" Width="280" HorizontalAlignment="Left" SelectionChanged="Geometry_Changed"/>
+                        </Grid>
+                        <CheckBox x:Name="LockBox" Content="Lock panel" Click="Geometry_Click"/>
+                        <Grid Margin="0,6">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Automatically hide the panel:" Style="{StaticResource FieldLabel}"/>
+                            <ComboBox x:Name="HideBox" Grid.Column="1" Width="220" HorizontalAlignment="Left" SelectionChanged="Hide_Changed">
+                                <ComboBoxItem Content="Never" Tag="Never"/>
+                                <ComboBoxItem Content="Intelligently" Tag="Intelligent"/>
+                                <ComboBoxItem Content="Always" Tag="Always"/>
+                            </ComboBox>
+                        </Grid>
+                        <CheckBox x:Name="ReserveBox" Content="Reserve space on screen edges for the panel" Click="Reserve_Click"/>
+                        <CheckBox x:Name="StartupBox" Content="Run when Windows starts" Margin="0,6,0,0" Click="Startup_Click"/>
+
+                        <TextBlock Text="Measurements" Style="{StaticResource GroupHeader}"/>
+                        <Grid Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Row size (pixels):" Style="{StaticResource FieldLabel}"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <TextBox x:Name="RowSizeBox" Width="72" LostFocus="Measure_LostFocus"/>
+                                <Button Content="−" Width="32" Margin="6,0,0,0" Click="RowDown"/>
+                                <Button Content="+" Width="32" Margin="4,0,0,0" Click="RowUp"/>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Number of rows:" Style="{StaticResource FieldLabel}"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <TextBox x:Name="RowsBox" Width="72" LostFocus="Measure_LostFocus"/>
+                                <Button Content="−" Width="32" Margin="6,0,0,0" Click="RowsDown"/>
+                                <Button Content="+" Width="32" Margin="4,0,0,0" Click="RowsUp"/>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Border width (pixels):" Style="{StaticResource FieldLabel}"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <TextBox x:Name="BorderBox" Width="72" LostFocus="Measure_LostFocus"/>
+                                <Button Content="−" Width="32" Margin="6,0,0,0" Click="BorderDown"/>
+                                <Button Content="+" Width="32" Margin="4,0,0,0" Click="BorderUp"/>
+                            </StackPanel>
+                        </Grid>
+                        <Grid Margin="0,10,0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="56"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Length (pixels):" Style="{StaticResource FieldLabel}"/>
+                            <Slider x:Name="LengthSlider" Grid.Column="1" Minimum="120" Maximum="4000" TickFrequency="10" IsSnapToTickEnabled="True" ValueChanged="Length_Changed"/>
+                            <TextBlock x:Name="LengthValue" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        </Grid>
+                        <CheckBox x:Name="AutoLengthBox" Content="Automatically increase the length" Click="Geometry_Click"/>
+                    </StackPanel>
+
+                    <StackPanel x:Name="PanelPageLook" Visibility="Collapsed">
+                        <TextBlock Text="General" Style="{StaticResource GroupHeader}"/>
+                        <Grid Margin="0,4,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Dark mode" Style="{StaticResource FieldLabel}"/>
+                            <CheckBox x:Name="DarkBox" Grid.Column="1" HorizontalAlignment="Right" Click="Chrome_Click"/>
+                        </Grid>
+                        <TextBlock Text="Background" Style="{StaticResource GroupHeader}"/>
+                        <Grid Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Style:" Style="{StaticResource FieldLabel}"/>
+                            <ComboBox x:Name="BackgroundStyleBox" Grid.Column="1" Width="220" HorizontalAlignment="Left" SelectionChanged="Chrome_Changed">
+                                <ComboBoxItem Content="Solid color" Tag="Solid"/>
+                                <ComboBoxItem Content="None" Tag="None"/>
+                            </ComboBox>
+                        </Grid>
+                        <Grid Margin="0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Color:" Style="{StaticResource FieldLabel}"/>
+                            <Button x:Name="ColorSwatch" Grid.Column="1" Width="36" Height="28" HorizontalAlignment="Left" Click="Color_Click" ToolTip="Choose a panel color"/>
+                        </Grid>
+                        <Grid Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Accent:" Style="{StaticResource FieldLabel}"/>
+                            <ComboBox x:Name="AccentBox" Grid.Column="1" Width="220" HorizontalAlignment="Left" SelectionChanged="Chrome_Changed">
+                                <ComboBoxItem Content="Kali blue" Tag="#3B78E0"/>
+                                <ComboBoxItem Content="Ice" Tag="#6CB6FF"/>
+                                <ComboBoxItem Content="Teal" Tag="#2EC4B6"/>
+                                <ComboBoxItem Content="Amber" Tag="#E0A100"/>
+                            </ComboBox>
+                        </Grid>
+                        <TextBlock Text="Icons" Style="{StaticResource GroupHeader}"/>
+                        <Grid Margin="0,4,0,8">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Adjust size automatically" Style="{StaticResource FieldLabel}"/>
+                            <CheckBox x:Name="AutoIconBox" Grid.Column="1" HorizontalAlignment="Right" Click="Chrome_Click"/>
+                        </Grid>
+                        <TextBlock Text="Opacity" Style="{StaticResource GroupHeader}"/>
+                        <Grid Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="40"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Enter:" Style="{StaticResource FieldLabel}"/>
+                            <Slider x:Name="EnterOpacitySlider" Grid.Column="1" Minimum="5" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="PanelOpacity_Changed"/>
+                            <TextBlock x:Name="EnterOpacityValue" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        </Grid>
+                        <Grid Margin="0,4">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="220"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="40"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Text="Leave:" Style="{StaticResource FieldLabel}"/>
+                            <Slider x:Name="LeaveOpacitySlider" Grid.Column="1" Minimum="5" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="PanelOpacity_Changed"/>
+                            <TextBlock x:Name="LeaveOpacityValue" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                        </Grid>
+                    </StackPanel>
+
+                    <StackPanel x:Name="PanelPageItems" Visibility="Collapsed">
+                        <TextBlock Text="Drag an item up or down, or use the arrows." Style="{StaticResource Hint}" Margin="0,0,0,8"/>
+                        <Grid Height="250">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <ListBox x:Name="ElementList" SelectionChanged="Element_Selected"
+                                     AllowDrop="True" PreviewMouseLeftButtonDown="Element_Press"
+                                     PreviewMouseMove="Element_Drag" DragOver="Element_DragOver" Drop="Element_Drop">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" Margin="2,2">
+                                            <TextBlock Text="{Binding Glyph}" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                                       Width="24" Foreground="White" VerticalAlignment="Center"/>
+                                            <TextBlock Text="{Binding Summary}" Foreground="White" VerticalAlignment="Center"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Top">
+                                <Button Content="↑" Width="36" Height="36" Click="Up_Click" ToolTip="Move up"/>
+                                <Button Content="↓" Width="36" Height="36" Margin="0,6,0,0" Click="Down_Click" ToolTip="Move down"/>
+                            </StackPanel>
+                        </Grid>
+                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
+                            <Button Content="+  Add" Width="96" Margin="0,0,8,0" Click="Add_Click" ToolTip="Add new items"/>
+                            <Button Content="—  Remove" Width="96" Margin="0,0,8,0" Click="Remove_Click"/>
+                            <Button x:Name="EditElementButton" Content="Properties" Width="96" Click="Edit_Click"/>
+                        </StackPanel>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <ScrollViewer x:Name="PageGeneral" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                <StackPanel Margin="18,8,18,12">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,16">
+                        <ToggleButton x:Name="ViewIcons" Style="{StaticResource ViewToggle}" Click="View_Click">
+                            <StackPanel>
+                                <TextBlock Text="&#xE8A9;" FontFamily="Segoe MDL2 Assets" FontSize="16" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Show as icons" HorizontalAlignment="Center" Margin="0,4,0,0" FontSize="11"/>
+                            </StackPanel>
+                        </ToggleButton>
+                        <ToggleButton x:Name="ViewList" Style="{StaticResource ViewToggle}" Click="View_Click">
+                            <StackPanel>
+                                <TextBlock Text="&#xEA37;" FontFamily="Segoe MDL2 Assets" FontSize="16" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Show as list" HorizontalAlignment="Center" Margin="0,4,0,0" FontSize="11"/>
+                            </StackPanel>
+                        </ToggleButton>
+                        <ToggleButton x:Name="ViewTree" Style="{StaticResource ViewToggle}" Click="View_Click">
+                            <StackPanel>
+                                <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets" FontSize="16" HorizontalAlignment="Center"/>
+                                <TextBlock Text="Show as tree" HorizontalAlignment="Center" Margin="0,4,0,0" FontSize="11"/>
+                            </StackPanel>
+                        </ToggleButton>
+                    </StackPanel>
+                    <CheckBox x:Name="GenericBox" Content="Show generic application names" Click="Menu_Click"/>
+                    <CheckBox x:Name="CategoryNamesBox" Content="Show category names" Click="Menu_Click"/>
+                    <CheckBox x:Name="TooltipsBox" Content="Show application tooltips" Click="Menu_Click"/>
+                    <CheckBox x:Name="DescriptionsBox" Content="Show application descriptions" Click="Menu_Click"/>
+                    <Grid Margin="0,10,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Application icon size:" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="AppIconBox" Grid.Column="1" Width="160" HorizontalAlignment="Left" SelectionChanged="Menu_Changed"/>
+                    </Grid>
+                    <Grid Margin="0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Category icon size:" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="CategoryIconBox" Grid.Column="1" Width="160" HorizontalAlignment="Left" SelectionChanged="Menu_Changed"/>
+                    </Grid>
+                    <Grid Margin="0,8,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Menu width:" Style="{StaticResource FieldLabel}"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <TextBox x:Name="MenuWidthBox" Width="72" LostFocus="Size_LostFocus"/>
+                            <Button Content="−" Width="32" Margin="6,0,0,0" Click="WidthDown"/>
+                            <Button Content="+" Width="32" Margin="4,0,0,0" Click="WidthUp"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Margin="0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Menu height:" Style="{StaticResource FieldLabel}"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <TextBox x:Name="MenuHeightBox" Width="72" LostFocus="Size_LostFocus"/>
+                            <Button Content="−" Width="32" Margin="6,0,0,0" Click="HeightDown"/>
+                            <Button Content="+" Width="32" Margin="4,0,0,0" Click="HeightUp"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Margin="0,12,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="48"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Background opacity:" Style="{StaticResource FieldLabel}"/>
+                        <Slider x:Name="OpacitySlider" Grid.Column="1" Minimum="0" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="Opacity_Changed"/>
+                        <TextBlock x:Name="OpacityValue" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    </Grid>
+                </StackPanel>
+            </ScrollViewer>
+
+            <ScrollViewer x:Name="PageAppearance" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                <StackPanel Margin="18,8,18,12">
+                    <TextBlock Text="Menu" Style="{StaticResource GroupHeader}"/>
+                    <CheckBox x:Name="HorizontalBox" Content="Position categories horizontally" Click="Menu_Click"/>
+                    <CheckBox x:Name="CategoriesLeftBox" Content="Position categories on left" Click="Menu_Click"/>
+                    <CheckBox x:Name="ProfileBottomBox" Content="Position profile on bottom" Click="Menu_Click"/>
+                    <CheckBox x:Name="SearchBottomBox" Content="Position search entry on bottom" Click="Menu_Click"/>
+                    <CheckBox x:Name="CommandsSearchBox" Content="Position commands next to search entry" Click="Menu_Click"/>
+                    <Grid Margin="0,8,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Profile:" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="ProfileBox" Grid.Column="1" Width="180" HorizontalAlignment="Left" SelectionChanged="Menu_Changed">
+                            <ComboBoxItem Content="Round Picture" Tag="Round"/>
+                            <ComboBoxItem Content="Square Picture" Tag="Square"/>
+                            <ComboBoxItem Content="Hidden" Tag="Hidden"/>
+                        </ComboBox>
+                    </Grid>
+                    <TextBlock Text="Panel Button" Style="{StaticResource GroupHeader}"/>
+                    <Grid Margin="0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Display:" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="DisplayBox" Grid.Column="1" Width="180" HorizontalAlignment="Left" SelectionChanged="Menu_Changed">
+                            <ComboBoxItem Content="Icon" Tag="Icon"/>
+                            <ComboBoxItem Content="Title" Tag="Title"/>
+                            <ComboBoxItem Content="Icon and title" Tag="IconAndTitle"/>
+                        </ComboBox>
+                    </Grid>
+                    <Grid Margin="0,6">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Title:" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="TitleBox" Grid.Column="1" LostFocus="Menu_Click"/>
+                    </Grid>
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Icon:" Style="{StaticResource FieldLabel}"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Border x:Name="IconPreview" Width="48" Height="48" Background="#1A1C22" BorderBrush="#4A4E5C" BorderThickness="1" CornerRadius="4"/>
+                            <Button Content="Browse…" Margin="12,0,0,0" Click="BrowseIcon_Click" VerticalAlignment="Center"/>
+                            <Button Content="Default" Margin="8,0,0,0" Click="ClearIcon_Click" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Grid>
+                    <CheckBox x:Name="SingleRowBox" Content="Use a single panel row" Margin="0,14,0,0" Click="Menu_Click"/>
+                </StackPanel>
+            </ScrollViewer>
+
+            <ScrollViewer x:Name="PageBehavior" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                <StackPanel Margin="18,8,18,12">
+                    <TextBlock Text="Default Category" Style="{StaticResource GroupHeader}"/>
+                    <RadioButton x:Name="FavRadio" GroupName="DefaultCategory" Content="Favorites" Click="Menu_Click"/>
+                    <RadioButton x:Name="RecentRadio" GroupName="DefaultCategory" Content="Recently Used" Click="Menu_Click"/>
+                    <RadioButton x:Name="AllRadio" GroupName="DefaultCategory" Content="All Applications" Click="Menu_Click"/>
+                    <TextBlock Text="Menu" Style="{StaticResource GroupHeader}"/>
+                    <CheckBox x:Name="HoverBox" Content="Switch categories by hovering" Click="Menu_Click"/>
+                    <CheckBox x:Name="StayBox" Content="Stay visible when focus is lost" Click="Menu_Click"/>
+                    <CheckBox x:Name="SortBox" Content="Sort categories" Click="Menu_Click"/>
+                    <CheckBox x:Name="AltF1Box" Content="Open the menu with Alt+F1" Click="Menu_Click"/>
+                    <TextBlock Text="Recently Used" Style="{StaticResource GroupHeader}"/>
+                    <Grid Margin="0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Amount of items:" Style="{StaticResource FieldLabel}"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <TextBox x:Name="RecentCountBox" Width="72" LostFocus="Size_LostFocus"/>
+                            <Button Content="−" Width="32" Margin="6,0,0,0" Click="RecentDown"/>
+                            <Button Content="+" Width="32" Margin="4,0,0,0" Click="RecentUp"/>
+                        </StackPanel>
+                    </Grid>
+                    <CheckBox x:Name="IncludeFavBox" Content="Include favorites" Click="Menu_Click"/>
+                    <TextBlock Text="Session Commands" Style="{StaticResource GroupHeader}"/>
+                    <CheckBox x:Name="ConfirmBox" Content="Show confirmation dialog" Click="Menu_Click"/>
+                </StackPanel>
+            </ScrollViewer>
+
+            <ScrollViewer x:Name="PageCommands" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                <StackPanel Margin="18,8,18,12">
+                    <TextBlock Text="Session commands" Style="{StaticResource GroupHeader}"/>
+                    <TextBlock Style="{StaticResource Hint}" Text="These are the buttons along the bottom of the menu, or beside the search box. Built-in commands lock, sleep, sign out, restart, and shut down. A custom command runs a program."/>
+                    <ListBox x:Name="CommandList" Height="160" SelectionChanged="Command_Selected"/>
+                    <Grid Margin="0,10,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Name:" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="CmdNameBox" Grid.Column="1" LostFocus="Command_Edited"/>
+                    </Grid>
+                    <Grid Margin="0,8,0,0">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Command:" Style="{StaticResource FieldLabel}"/>
+                        <TextBox x:Name="CmdLineBox" Grid.Column="1" LostFocus="Command_Edited"/>
+                    </Grid>
+                    <CheckBox x:Name="CmdVisibleBox" Content="Visible in the menu" Click="Command_Edited"/>
+                    <CheckBox x:Name="CmdConfirmBox" Content="Ask for confirmation" Click="Command_Edited"/>
+                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
+                        <Button Content="Add custom command" Click="CommandAdd_Click" Margin="0,0,8,0"/>
+                        <Button Content="Remove" Click="CommandRemove_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </ScrollViewer>
+
+            <ScrollViewer x:Name="PageSearch" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
+                <StackPanel Margin="18,8,18,12">
+                    <TextBlock Text="Search" Style="{StaticResource GroupHeader}"/>
+                    <TextBlock Style="{StaticResource Hint}" Text="Typing in the menu matches application names. Each word has to appear somewhere in the match. These options also search the description and the program path."/>
+                    <CheckBox x:Name="SearchDescBox" Content="Search descriptions" Click="Menu_Click"/>
+                    <CheckBox x:Name="SearchExeBox" Content="Search executable paths" Click="Menu_Click"/>
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </DockPanel>
+</Window>

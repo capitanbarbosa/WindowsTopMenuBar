@@ -305,6 +305,20 @@ public partial class SettingsWindow : Window
         SaveGeometry();
     }
 
+    void Position_Changed(object sender, SelectionChangedEventArgs e)
+    {
+        if (_loading) return;
+        string edge = TagOf(EdgeBox);
+        string mode = TagOf(ModeBox);
+        _loading = true;
+        if (edge is "Left" or "Right" && mode == "Horizontal")
+            SelectTag(ModeBox, "Vertical");
+        else if (edge is "Top" or "Bottom" && mode is "Vertical" or "Deskbar")
+            SelectTag(ModeBox, "Horizontal");
+        _loading = false;
+        SaveGeometry();
+    }
+
     void Hide_Changed(object sender, SelectionChangedEventArgs e)
     {
         if (_loading) return;

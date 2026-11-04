@@ -68,7 +68,7 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Position:" Style="{StaticResource FieldLabel}"/>
-                            <ComboBox x:Name="EdgeBox" Grid.Column="1" Width="220" HorizontalAlignment="Left" SelectionChanged="Geometry_Changed">
+                            <ComboBox x:Name="EdgeBox" Grid.Column="1" Width="220" HorizontalAlignment="Left" SelectionChanged="Position_Changed">
                                 <ComboBoxItem Content="Top" Tag="Top"/>
                                 <ComboBoxItem Content="Bottom" Tag="Bottom"/>
                                 <ComboBoxItem Content="Left" Tag="Left"/>

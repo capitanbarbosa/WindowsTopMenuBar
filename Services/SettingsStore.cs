@@ -289,10 +289,13 @@ public sealed class SettingsStore
         if (string.IsNullOrWhiteSpace(config.Panel.AutoHideMode))
             config.Panel.AutoHideMode = config.Panel.AutoHide ? "Always" : "Never";
         config.Panel.AutoHide = config.Panel.AutoHideMode is "Always" or "Intelligent";
-        if (config.Panel.Mode == "Horizontal" && config.Panel.Edge is "Left" or "Right")
-            config.Panel.Edge = "Top";
-        if (config.Panel.Mode is "Vertical" or "Deskbar" && config.Panel.Edge is "Top" or "Bottom")
-            config.Panel.Edge = "Left";
+        if (config.Panel.Edge is "Left" or "Right")
+        {
+            if (config.Panel.Mode == "Horizontal")
+                config.Panel.Mode = "Vertical";
+        }
+        else if (config.Panel.Mode is "Vertical" or "Deskbar")
+            config.Panel.Mode = "Horizontal";
         config.Menu.ViewMode = "List";
         config.Menu.ShowGenericNames = false;
         config.Menu.ShowCategoryNames = true;

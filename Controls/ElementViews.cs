@@ -658,19 +658,6 @@ public sealed class DesktopShifterView : StackPanel
                 _cells.Add(cell);
                 Children.Add(cell);
             }
-            var add = Ui.Flat();
-            add.Width = 18;
-            add.Margin = new Thickness(0);
-            add.Padding = new Thickness(0);
-            add.Content = new TextBlock { Text = "+", Foreground = Ui.PanelText(), FontSize = 14, HorizontalAlignment = HorizontalAlignment.Center };
-            add.ToolTip = "Add a desktop";
-            add.Click += (_, _) =>
-            {
-                try { VirtualDesktopService.Instance.Create(); }
-                catch (Exception ex) { Dialogs.Alert(_actions.Owner(), ex.Message); }
-                Refresh();
-            };
-            Children.Add(add);
         }
 
         for (int i = 0; i < _cells.Count && i < desktops.Count; i++)
@@ -786,13 +773,6 @@ public sealed class DesktopShifterView : StackPanel
         menu.Items.Add(Item("Remove", () =>
         {
             try { VirtualDesktopService.Instance.Remove(id); }
-            catch (Exception ex) { Dialogs.Alert(_actions.Owner(), ex.Message); }
-            _signature = "";
-            Refresh();
-        }));
-        menu.Items.Add(Item("Add desktop", () =>
-        {
-            try { VirtualDesktopService.Instance.Create(); }
             catch (Exception ex) { Dialogs.Alert(_actions.Owner(), ex.Message); }
             _signature = "";
             Refresh();

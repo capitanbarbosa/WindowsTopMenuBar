@@ -17,4 +17,7 @@
     <Description>Kali-style top panel and application menu for Windows</Description>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
+  <ItemGroup>
+    <Resource Include="Assets\whisker-mark.png" />
+  </ItemGroup>
 </Project>

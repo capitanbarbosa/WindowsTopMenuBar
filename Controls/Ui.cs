@@ -1,6 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using WindowsWhisker.Native;
 using WindowsWhisker.Services;
 
@@ -76,8 +77,25 @@ public static class Ui
         return brush;
     }
 
+    static ImageSource? _mark;
+
     public static FrameworkElement Mark(double size)
     {
+        var source = MarkImage();
+        if (source != null)
+        {
+            var image = new Image
+            {
+                Source = source,
+                Width = size,
+                Height = size,
+                Stretch = Stretch.Uniform,
+                SnapsToDevicePixels = true
+            };
+            RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
+            return image;
+        }
+
         var grid = new Grid { Width = size, Height = size };
         grid.Children.Add(new Border
         {
@@ -88,14 +106,33 @@ public static class Ui
         {
             Text = "W",
             Foreground = Brushes.White,
-            FontWeight = FontWeights.Bold,
+            FontWeight = FontWeights.SemiBold,
             FontFamily = new FontFamily("Segoe UI"),
-            FontSize = size * 0.62,
+            FontSize = size * 0.58,
             HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center,
-            Margin = new Thickness(0, -1, 0, 0)
+            VerticalAlignment = VerticalAlignment.Center
         });
         return grid;
+    }
+
+    static ImageSource? MarkImage()
+    {
+        if (_mark != null) return _mark;
+        try
+        {
+            var bmp = new BitmapImage();
+            bmp.BeginInit();
+            bmp.UriSource = new Uri("pack://application:,,,/Assets/whisker-mark.png", UriKind.Absolute);
+            bmp.CacheOption = BitmapCacheOption.OnLoad;
+            bmp.EndInit();
+            bmp.Freeze();
+            _mark = bmp;
+            return _mark;
+        }
+        catch
+        {
+            return null;
+        }
     }
 
     public static FrameworkElement IconOrMark(string? path, double size, int index = 0)

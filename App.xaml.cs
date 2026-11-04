@@ -39,9 +39,11 @@ public partial class App : Application
         if (!created)
         {
             Log.Error("already running");
-            Win32.AttachConsole(Win32.ATTACH_PARENT_PROCESS);
-            try { Console.WriteLine("Windows Whisker is already running. Close the bar first, or right-click it and choose Quit."); }
-            catch { /* no console */ }
+            MessageBox.Show(
+                "Windows Whisker is already running.\n\nIf you do not see the bar, a crashed copy is still in memory. End WindowsWhisker.exe in Task Manager, or run Stop Windows Whisker.cmd, then start it again.",
+                "Windows Whisker",
+                MessageBoxButton.OK,
+                MessageBoxImage.Information);
             Shutdown();
             return;
         }

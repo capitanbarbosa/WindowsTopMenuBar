@@ -190,10 +190,8 @@ public partial class SettingsWindow : Window
     void ShowPanelSub(string page)
     {
         PanelPageDisplay.Visibility = page == "display" ? Visibility.Visible : Visibility.Collapsed;
-        PanelPageLook.Visibility = page == "look" ? Visibility.Visible : Visibility.Collapsed;
         PanelPageItems.Visibility = page == "items" ? Visibility.Visible : Visibility.Collapsed;
         PanelTabDisplay.IsChecked = page == "display";
-        PanelTabLook.IsChecked = page == "look";
         PanelTabItems.IsChecked = page == "items";
     }
 
@@ -254,9 +252,7 @@ public partial class SettingsWindow : Window
         hex = NormalizeHex(hex) ?? "#1E2D45";
         var brush = Ui.Brush(hex, "#1E2D45");
         ColorSwatch.Background = brush;
-        ColorSwatchPanel.Background = brush;
         SetHexText(HexBox, hex);
-        SetHexText(HexBoxPanel, hex);
     }
 
     static void SetHexText(TextBox box, string hex)

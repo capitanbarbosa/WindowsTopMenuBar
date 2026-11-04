@@ -50,7 +50,6 @@
                     </Grid>
                     <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
                         <ToggleButton x:Name="PanelTabDisplay" Content="Display" Style="{StaticResource TabToggle}" Tag="display" Click="PanelSub_Click"/>
-                        <ToggleButton x:Name="PanelTabLook" Content="Appearance" Style="{StaticResource TabToggle}" Tag="look" Click="PanelSub_Click"/>
                         <ToggleButton x:Name="PanelTabItems" Content="Items" Style="{StaticResource TabToggle}" Tag="items" Click="PanelSub_Click"/>
                     </StackPanel>
 
@@ -155,87 +154,6 @@
                             <TextBlock x:Name="LengthValue" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                         </Grid>
                         <CheckBox x:Name="AutoLengthBox" Content="Automatically increase the length" Click="Geometry_Click"/>
-                    </StackPanel>
-
-                    <StackPanel x:Name="PanelPageLook" Visibility="Collapsed">
-                        <TextBlock Text="General" Style="{StaticResource GroupHeader}"/>
-                        <Grid Margin="0,4,0,8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Dark mode" Style="{StaticResource FieldLabel}"/>
-                            <CheckBox x:Name="DarkBox" Grid.Column="1" HorizontalAlignment="Right" Click="Chrome_Click"/>
-                        </Grid>
-                        <TextBlock Text="Background" Style="{StaticResource GroupHeader}"/>
-                        <Grid Margin="0,4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Style:" Style="{StaticResource FieldLabel}"/>
-                            <ComboBox x:Name="BackgroundStyleBox" Grid.Column="1" Width="220" HorizontalAlignment="Left" SelectionChanged="Chrome_Changed">
-                                <ComboBoxItem Content="Solid color" Tag="Solid"/>
-                                <ComboBoxItem Content="None" Tag="None"/>
-                            </ComboBox>
-                        </Grid>
-                        <Grid Margin="0,8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Color:" Style="{StaticResource FieldLabel}"/>
-                            <StackPanel Grid.Column="1" Orientation="Horizontal">
-                                <Button x:Name="ColorSwatchPanel" Width="36" Height="28" Click="Color_Click" ToolTip="Choose a panel color"/>
-                                <TextBox x:Name="HexBoxPanel" Width="108" Margin="8,0,0,0" VerticalAlignment="Center"
-                                         FontFamily="Consolas" MaxLength="7"
-                                         ToolTip="Panel background hex, like #1E2D45"
-                                         TextChanged="Hex_TextChanged" LostFocus="Hex_LostFocus" KeyDown="Hex_KeyDown"/>
-                            </StackPanel>
-                        </Grid>
-                        <Grid Margin="0,4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Accent:" Style="{StaticResource FieldLabel}"/>
-                            <ComboBox x:Name="AccentBox" Grid.Column="1" Width="220" HorizontalAlignment="Left" SelectionChanged="Chrome_Changed">
-                                <ComboBoxItem Content="Kali blue" Tag="#3B78E0"/>
-                                <ComboBoxItem Content="Ice" Tag="#6CB6FF"/>
-                                <ComboBoxItem Content="Teal" Tag="#2EC4B6"/>
-                                <ComboBoxItem Content="Amber" Tag="#E0A100"/>
-                            </ComboBox>
-                        </Grid>
-                        <TextBlock Text="Icons" Style="{StaticResource GroupHeader}"/>
-                        <Grid Margin="0,4,0,8">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220"/>
-                                <ColumnDefinition Width="*"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Adjust size automatically" Style="{StaticResource FieldLabel}"/>
-                            <CheckBox x:Name="AutoIconBox" Grid.Column="1" HorizontalAlignment="Right" Click="Chrome_Click"/>
-                        </Grid>
-                        <TextBlock Text="Opacity" Style="{StaticResource GroupHeader}"/>
-                        <Grid Margin="0,4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="40"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Enter:" Style="{StaticResource FieldLabel}"/>
-                            <Slider x:Name="EnterOpacitySlider" Grid.Column="1" Minimum="5" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="PanelOpacity_Changed"/>
-                            <TextBlock x:Name="EnterOpacityValue" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                        </Grid>
-                        <Grid Margin="0,4">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="220"/>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="40"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBlock Text="Leave:" Style="{StaticResource FieldLabel}"/>
-                            <Slider x:Name="LeaveOpacitySlider" Grid.Column="1" Minimum="5" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="PanelOpacity_Changed"/>
-                            <TextBlock x:Name="LeaveOpacityValue" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                        </Grid>
                     </StackPanel>
 
                     <StackPanel x:Name="PanelPageItems" Visibility="Collapsed">
@@ -353,39 +271,6 @@
 
             <ScrollViewer x:Name="PageAppearance" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
                 <StackPanel Margin="18,8,18,12">
-                    <TextBlock Text="Panel" Style="{StaticResource GroupHeader}"/>
-                    <Grid Margin="0,4,0,10">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Background:" Style="{StaticResource FieldLabel}"/>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <Button x:Name="ColorSwatch" Width="36" Height="28" Click="Color_Click" ToolTip="Choose a panel color"/>
-                            <TextBox x:Name="HexBox" Width="108" Margin="8,0,0,0" VerticalAlignment="Center"
-                                     FontFamily="Consolas" MaxLength="7"
-                                     ToolTip="Panel background hex, like #1E2D45"
-                                     TextChanged="Hex_TextChanged" LostFocus="Hex_LostFocus" KeyDown="Hex_KeyDown"/>
-                        </StackPanel>
-                    </Grid>
-                    <TextBlock Text="Menu" Style="{StaticResource GroupHeader}"/>
-                    <CheckBox x:Name="HorizontalBox" Content="Position categories horizontally" Click="Menu_Click"/>
-                    <CheckBox x:Name="CategoriesLeftBox" Content="Position categories on left" Click="Menu_Click"/>
-                    <CheckBox x:Name="ProfileBottomBox" Content="Position profile on bottom" Click="Menu_Click"/>
-                    <CheckBox x:Name="SearchBottomBox" Content="Position search entry on bottom" Click="Menu_Click"/>
-                    <CheckBox x:Name="CommandsSearchBox" Content="Position commands next to search entry" Click="Menu_Click"/>
-                    <Grid Margin="0,8,0,4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Profile:" Style="{StaticResource FieldLabel}"/>
-                        <ComboBox x:Name="ProfileBox" Grid.Column="1" Width="180" HorizontalAlignment="Left" SelectionChanged="Menu_Changed">
-                            <ComboBoxItem Content="Round Picture" Tag="Round"/>
-                            <ComboBoxItem Content="Square Picture" Tag="Square"/>
-                            <ComboBoxItem Content="Hidden" Tag="Hidden"/>
-                        </ComboBox>
-                    </Grid>
                     <TextBlock Text="Panel Button" Style="{StaticResource GroupHeader}"/>
                     <Grid Margin="0,4">
                         <Grid.ColumnDefinitions>
@@ -419,7 +304,103 @@
                             <Button Content="Default" Margin="8,0,0,0" Click="ClearIcon_Click" VerticalAlignment="Center"/>
                         </StackPanel>
                     </Grid>
-                    <CheckBox x:Name="SingleRowBox" Content="Use a single panel row" Margin="0,14,0,0" Click="Menu_Click"/>
+                    <CheckBox x:Name="SingleRowBox" Content="Use a single panel row" Margin="0,14,0,8" Click="Menu_Click"/>
+                    <TextBlock Text="General" Style="{StaticResource GroupHeader}"/>
+                    <Grid Margin="0,4,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Dark mode" Style="{StaticResource FieldLabel}"/>
+                        <CheckBox x:Name="DarkBox" Grid.Column="1" HorizontalAlignment="Right" Click="Chrome_Click"/>
+                    </Grid>
+                    <TextBlock Text="Background" Style="{StaticResource GroupHeader}"/>
+                    <Grid Margin="0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Style:" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="BackgroundStyleBox" Grid.Column="1" Width="220" HorizontalAlignment="Left" SelectionChanged="Chrome_Changed">
+                            <ComboBoxItem Content="Solid color" Tag="Solid"/>
+                            <ComboBoxItem Content="None" Tag="None"/>
+                        </ComboBox>
+                    </Grid>
+                    <Grid Margin="0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Color:" Style="{StaticResource FieldLabel}"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button x:Name="ColorSwatch" Width="36" Height="28" Click="Color_Click" ToolTip="Choose a panel color"/>
+                            <TextBox x:Name="HexBox" Width="108" Margin="8,0,0,0" VerticalAlignment="Center"
+                                     FontFamily="Consolas" MaxLength="7"
+                                     ToolTip="Panel background hex, like #1E2D45"
+                                     TextChanged="Hex_TextChanged" LostFocus="Hex_LostFocus" KeyDown="Hex_KeyDown"/>
+                        </StackPanel>
+                    </Grid>
+                    <Grid Margin="0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Accent:" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="AccentBox" Grid.Column="1" Width="220" HorizontalAlignment="Left" SelectionChanged="Chrome_Changed">
+                            <ComboBoxItem Content="Kali blue" Tag="#3B78E0"/>
+                            <ComboBoxItem Content="Ice" Tag="#6CB6FF"/>
+                            <ComboBoxItem Content="Teal" Tag="#2EC4B6"/>
+                            <ComboBoxItem Content="Amber" Tag="#E0A100"/>
+                        </ComboBox>
+                    </Grid>
+                    <TextBlock Text="Icons" Style="{StaticResource GroupHeader}"/>
+                    <Grid Margin="0,4,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Adjust size automatically" Style="{StaticResource FieldLabel}"/>
+                        <CheckBox x:Name="AutoIconBox" Grid.Column="1" HorizontalAlignment="Right" Click="Chrome_Click"/>
+                    </Grid>
+                    <TextBlock Text="Opacity" Style="{StaticResource GroupHeader}"/>
+                    <Grid Margin="0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="40"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Enter:" Style="{StaticResource FieldLabel}"/>
+                        <Slider x:Name="EnterOpacitySlider" Grid.Column="1" Minimum="5" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="PanelOpacity_Changed"/>
+                        <TextBlock x:Name="EnterOpacityValue" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    </Grid>
+                    <Grid Margin="0,4,0,8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="40"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Leave:" Style="{StaticResource FieldLabel}"/>
+                        <Slider x:Name="LeaveOpacitySlider" Grid.Column="1" Minimum="5" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="PanelOpacity_Changed"/>
+                        <TextBlock x:Name="LeaveOpacityValue" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+                    </Grid>
+                    <TextBlock Text="Menu" Style="{StaticResource GroupHeader}"/>
+                    <CheckBox x:Name="HorizontalBox" Content="Position categories horizontally" Click="Menu_Click"/>
+                    <CheckBox x:Name="CategoriesLeftBox" Content="Position categories on left" Click="Menu_Click"/>
+                    <CheckBox x:Name="ProfileBottomBox" Content="Position profile on bottom" Click="Menu_Click"/>
+                    <CheckBox x:Name="SearchBottomBox" Content="Position search entry on bottom" Click="Menu_Click"/>
+                    <CheckBox x:Name="CommandsSearchBox" Content="Position commands next to search entry" Click="Menu_Click"/>
+                    <Grid Margin="0,8,0,4">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Profile:" Style="{StaticResource FieldLabel}"/>
+                        <ComboBox x:Name="ProfileBox" Grid.Column="1" Width="180" HorizontalAlignment="Left" SelectionChanged="Menu_Changed">
+                            <ComboBoxItem Content="Round Picture" Tag="Round"/>
+                            <ComboBoxItem Content="Square Picture" Tag="Square"/>
+                            <ComboBoxItem Content="Hidden" Tag="Hidden"/>
+                        </ComboBox>
+                    </Grid>
                 </StackPanel>
             </ScrollViewer>
 

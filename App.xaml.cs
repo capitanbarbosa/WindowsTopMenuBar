@@ -10,6 +10,7 @@ namespace WindowsWhisker;
 public partial class App : Application
 {
     Mutex? _mutex;
+    bool _ownsPanel;
 
     protected override void OnStartup(StartupEventArgs e)
     {
@@ -37,10 +38,15 @@ public partial class App : Application
         }
         if (!created)
         {
+            Log.Error("already running");
+            Win32.AttachConsole(Win32.ATTACH_PARENT_PROCESS);
+            try { Console.WriteLine("Windows Whisker is already running. Close the bar first, or right-click it and choose Quit."); }
+            catch { /* no console */ }
             Shutdown();
             return;
         }
 
+        _ownsPanel = true;
         SettingsStore.Instance.Load();
         StartupService.Apply(SettingsStore.Instance.Config.RunAtStartup);
         _ = AppCatalogService.Instance.LoadAsync().ContinueWith(
@@ -56,8 +62,11 @@ public partial class App : Application
 
     protected override void OnExit(ExitEventArgs e)
     {
-        WindowTracker.Instance.Stop();
-        SettingsStore.Instance.SaveNow();
+        if (_ownsPanel)
+        {
+            WindowTracker.Instance.Stop();
+            SettingsStore.Instance.SaveNow();
+        }
         try { _mutex?.ReleaseMutex(); } catch { /* already released */ }
         base.OnExit(e);
     }

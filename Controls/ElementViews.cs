@@ -607,7 +607,7 @@ public sealed class DesktopShifterView : StackPanel
             }
             var add = Ui.Flat();
             add.Width = 18;
-            add.Margin = new Thickness(2, 4, 2, 4);
+            add.Margin = new Thickness(0);
             add.Padding = new Thickness(0);
             add.Content = new TextBlock { Text = "+", Foreground = Ui.PanelText(), FontSize = 14, HorizontalAlignment = HorizontalAlignment.Center };
             add.ToolTip = "Add a desktop";
@@ -655,7 +655,7 @@ public sealed class DesktopShifterView : StackPanel
             MinWidth = _vertical ? 20 : 28,
             MaxWidth = _vertical ? 48 : 88,
             Padding = new Thickness(0),
-            Margin = new Thickness(_vertical ? 0 : 1, _vertical ? 1 : 0, _vertical ? 0 : 1, _vertical ? 1 : 0),
+            Margin = new Thickness(0),
             Background = Brushes.Transparent,
             BorderThickness = new Thickness(0),
             HorizontalAlignment = _vertical ? HorizontalAlignment.Stretch : HorizontalAlignment.Left,

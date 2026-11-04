@@ -71,7 +71,7 @@ public sealed class PanelConfig
     public string MonitorDevice { get; set; } = "";
     public bool DarkMode { get; set; } = true;
     public string BackgroundStyle { get; set; } = "Solid";
-    public string Background { get; set; } = "#283851";
+    public string Background { get; set; } = "#1E2D45";
     public string Accent { get; set; } = "#3B78E0";
     public bool AutoIconSize { get; set; } = true;
     public int OpacityEnter { get; set; } = 100;

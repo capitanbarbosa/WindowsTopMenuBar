@@ -239,7 +239,7 @@ public partial class SettingsWindow : Window
 
     void PaintSwatch(string hex)
     {
-        ColorSwatch.Background = Ui.Brush(hex, "#283851");
+        ColorSwatch.Background = Ui.Brush(hex, "#1E2D45");
     }
 
     void SaveMenu()
@@ -361,7 +361,7 @@ public partial class SettingsWindow : Window
 
     void Color_Click(object sender, RoutedEventArgs e)
     {
-        var current = Ui.Parse(SettingsStore.Instance.Config.Panel.Background, System.Windows.Media.Color.FromRgb(0x28, 0x38, 0x51));
+        var current = Ui.Parse(SettingsStore.Instance.Config.Panel.Background, System.Windows.Media.Color.FromRgb(0x1E, 0x2D, 0x45));
         using var dialog = new System.Windows.Forms.ColorDialog
         {
             Color = System.Drawing.Color.FromArgb(current.R, current.G, current.B),

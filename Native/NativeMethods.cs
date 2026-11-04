@@ -58,6 +58,7 @@ public static class Win32
     public const int GWL_STYLE = -16;
     public const int GWL_EXSTYLE = -20;
     public const int GW_OWNER = 4;
+    public const uint GA_ROOT = 2;
     public const int WS_VISIBLE = 0x10000000;
     public const int WS_EX_TOOLWINDOW = 0x00000080;
     public const int WS_EX_APPWINDOW = 0x00040000;
@@ -200,6 +201,9 @@ public static class Win32
 
     [DllImport("user32.dll")]
     public static extern IntPtr GetParent(IntPtr hWnd);
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetAncestor(IntPtr hwnd, uint gaFlags);
 
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode, EntryPoint = "GetModuleHandleW")]
     public static extern IntPtr GetModuleHandle(string? lpModuleName);

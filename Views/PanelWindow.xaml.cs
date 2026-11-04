@@ -348,9 +348,11 @@ public partial class PanelWindow : Window
 
     void HookDrag(Grid slot, Border overlay)
     {
+        bool moved = false;
         overlay.MouseLeftButtonDown += (_, e) =>
         {
             if (!_unlocked || e.OriginalSource is Button) return;
+            moved = false;
             _dragFrom = Strip.Children.IndexOf(slot);
             overlay.CaptureMouse();
             e.Handled = true;
@@ -363,13 +365,16 @@ public partial class PanelWindow : Window
             {
                 MoveVisual(_dragFrom, over);
                 _dragFrom = over;
+                moved = true;
             }
         };
         overlay.MouseLeftButtonUp += (_, _) =>
         {
             _dragFrom = -1;
             if (overlay.IsMouseCaptured) overlay.ReleaseMouseCapture();
-            SettingsStore.Instance.NotifyItems();
+            if (!moved) return;
+            moved = false;
+            Dispatcher.BeginInvoke(() => SettingsStore.Instance.NotifyItems(), DispatcherPriority.Background);
         };
     }
 

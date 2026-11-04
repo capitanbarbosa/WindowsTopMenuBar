@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Interop;
+using System.Windows.Threading;
 using WindowsWhisker.Native;
 
 namespace WindowsWhisker.Controls;
@@ -11,6 +12,7 @@ public static class ContextMenus
 {
     static ContextMenu? _open;
     static IntPtr _hook;
+    static IntPtr _popupHwnd;
     static readonly HookProc Proc = OnMouse;
     static bool _ignoreNextRightUp;
 
@@ -35,6 +37,11 @@ public static class ContextMenus
     static void OnOpened(object sender, RoutedEventArgs e)
     {
         _ignoreNextRightUp = Mouse.RightButton == MouseButtonState.Pressed;
+        if (sender is ContextMenu menu)
+        {
+            var source = PresentationSource.FromVisual(menu) as HwndSource;
+            _popupHwnd = source?.Handle ?? IntPtr.Zero;
+        }
         if (_hook != IntPtr.Zero) return;
         IntPtr module = Win32.GetModuleHandle(null);
         _hook = Win32.SetWindowsHookEx(Win32.WH_MOUSE_LL, Proc, module, 0);
@@ -52,6 +59,7 @@ public static class ContextMenus
         }
         if (_open == sender)
             _open = null;
+        _popupHwnd = IntPtr.Zero;
         DropHook();
     }
 
@@ -72,59 +80,53 @@ public static class ContextMenus
 
     static IntPtr OnMouse(int nCode, IntPtr wParam, IntPtr lParam)
     {
-        if (nCode >= 0 && _open != null)
+        IntPtr hook = _hook;
+        try
         {
-            int msg = wParam.ToInt32();
-            if (msg == Win32.WM_RBUTTONDOWN || msg == Win32.WM_RBUTTONUP)
+            if (nCode >= 0 && _open != null)
             {
+                int msg = wParam.ToInt32();
                 if (_ignoreNextRightUp && msg == Win32.WM_RBUTTONUP)
-                {
                     _ignoreNextRightUp = false;
-                    return Win32.CallNextHookEx(_hook, nCode, wParam, lParam);
+                else if (msg is Win32.WM_LBUTTONDOWN or Win32.WM_RBUTTONDOWN or Win32.WM_MBUTTONDOWN or Win32.WM_NCLBUTTONDOWN)
+                {
+                    var info = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
+                    if (!HitsPopup(info.pt))
+                        DismissLater();
                 }
             }
-            if (msg is Win32.WM_LBUTTONDOWN or Win32.WM_RBUTTONDOWN or Win32.WM_MBUTTONDOWN or Win32.WM_NCLBUTTONDOWN)
-            {
-                var info = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
-                if (!HitsPopup(info.pt))
-                    Dismiss();
-            }
         }
-        return Win32.CallNextHookEx(_hook, nCode, wParam, lParam);
+        catch
+        {
+            // A throw inside a low-level hook takes the process down.
+        }
+        return Win32.CallNextHookEx(hook, nCode, wParam, lParam);
     }
 
     static bool HitsPopup(POINT pt)
     {
+        if (_popupHwnd == IntPtr.Zero) return false;
         IntPtr hwnd = Win32.WindowFromPoint(pt);
         while (hwnd != IntPtr.Zero)
         {
-            try
-            {
-                var source = HwndSource.FromHwnd(hwnd);
-                if (source?.RootVisual != null)
-                {
-                    string name = source.RootVisual.GetType().Name;
-                    if (name is "PopupRoot" || source.RootVisual is ContextMenu)
-                        return true;
-                }
-            }
-            catch
-            {
-                // Native window; keep walking parents.
-            }
+            if (hwnd == _popupHwnd) return true;
+            IntPtr owner = Win32.GetWindow(hwnd, Win32.GW_OWNER);
+            if (owner == _popupHwnd) return true;
             hwnd = Win32.GetParent(hwnd);
+            if (hwnd == IntPtr.Zero && owner != IntPtr.Zero)
+                hwnd = owner;
         }
         return false;
     }
 
-    static void Dismiss()
+    static void DismissLater()
     {
         var menu = _open;
         if (menu == null) return;
-        var dispatcher = menu.Dispatcher;
-        if (dispatcher.CheckAccess())
-            menu.IsOpen = false;
-        else
-            dispatcher.BeginInvoke(() => menu.IsOpen = false);
+        menu.Dispatcher.BeginInvoke(() =>
+        {
+            if (menu.IsOpen)
+                menu.IsOpen = false;
+        }, DispatcherPriority.Input);
     }
 }

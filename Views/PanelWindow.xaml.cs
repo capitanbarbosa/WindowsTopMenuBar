@@ -478,7 +478,9 @@ public partial class PanelWindow : Window
 
     static void InsertSmart(List<PanelItem> items, PanelItem item)
     {
-        int index = items.FindIndex(i => i.Kind is PanelKinds.TaskList or PanelKinds.Spacer or PanelKinds.DesktopShifter or PanelKinds.Clock);
+        int index = items.FindIndex(i =>
+            i.Kind is PanelKinds.TaskList or PanelKinds.Spacer or PanelKinds.DesktopShifter or PanelKinds.Clock ||
+            (i.Kind == PanelKinds.Separator && i.Expand));
         if (index < 0) items.Add(item);
         else items.Insert(index, item);
     }

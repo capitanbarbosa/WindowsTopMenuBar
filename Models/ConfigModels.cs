@@ -144,6 +144,7 @@ public sealed class PanelItem
             items.Add(Launcher(browser, BrowserLabel(browser)));
 
         items.Add(new PanelItem { Kind = PanelKinds.DesktopShifter });
+        items.Add(new PanelItem { Kind = PanelKinds.Separator, Style = "Transparent", Expand = true });
         items.Add(new PanelItem { Kind = PanelKinds.Clock });
         return items;
     }

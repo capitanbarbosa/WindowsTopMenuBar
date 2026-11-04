@@ -104,9 +104,21 @@ public sealed class WindowTracker
             return true;
         }, IntPtr.Zero);
 
-        _windows = found;
-        var alive = found.Select(w => w.Handle).ToHashSet();
-        foreach (var key in _icons.Keys.Where(k => !alive.Contains(k)).ToList())
+        var live = found.ToDictionary(w => w.Handle);
+        var ordered = new List<WindowInfo>(_windows.Count + found.Count);
+        foreach (var existing in _windows)
+        {
+            if (live.TryGetValue(existing.Handle, out var current))
+                ordered.Add(current);
+        }
+        var kept = ordered.Select(w => w.Handle).ToHashSet();
+        foreach (var window in found)
+        {
+            if (kept.Add(window.Handle))
+                ordered.Add(window);
+        }
+        _windows = ordered;
+        foreach (var key in _icons.Keys.Where(k => !live.ContainsKey(k)).ToList())
             _icons.Remove(key);
         Changed?.Invoke();
     }
@@ -162,11 +174,11 @@ public sealed class WindowTracker
 
     static ImageSource? ReadIcon(IntPtr hwnd, string? path)
     {
-        IntPtr hIcon = Win32.SendMessage(hwnd, Win32.WM_GETICON, (IntPtr)Win32.ICON_SMALL2, IntPtr.Zero);
+        IntPtr hIcon = Win32.SendMessage(hwnd, Win32.WM_GETICON, (IntPtr)Win32.ICON_BIG, IntPtr.Zero);
+        if (hIcon == IntPtr.Zero)
+            hIcon = Win32.SendMessage(hwnd, Win32.WM_GETICON, (IntPtr)Win32.ICON_SMALL2, IntPtr.Zero);
         if (hIcon == IntPtr.Zero)
             hIcon = Win32.SendMessage(hwnd, Win32.WM_GETICON, (IntPtr)Win32.ICON_SMALL, IntPtr.Zero);
-        if (hIcon == IntPtr.Zero)
-            hIcon = Win32.SendMessage(hwnd, Win32.WM_GETICON, (IntPtr)Win32.ICON_BIG, IntPtr.Zero);
         if (hIcon == IntPtr.Zero)
             hIcon = Win32.GetClassLongPtr(hwnd, Win32.GCL_HICONSM);
         if (hIcon == IntPtr.Zero)

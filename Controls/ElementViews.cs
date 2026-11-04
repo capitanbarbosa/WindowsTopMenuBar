@@ -450,7 +450,7 @@ public sealed class TaskListView : Grid
     readonly bool _vertical;
     readonly ScrollViewer _scroll;
     readonly StackPanel _row;
-    string _signature = "";
+    string _order = "";
 
     public TaskListView(PanelActions actions, bool vertical)
     {
@@ -481,14 +481,16 @@ public sealed class TaskListView : Grid
             .Where(w => VirtualDesktopService.Instance.IsOnCurrentDesktop(w.Handle))
             .Take(40)
             .ToList();
-        string signature = string.Join("|", windows.Select(w => w.Handle.ToInt64() + ":" + w.Title + ":" + (w.IsForeground ? "1" : "0") + ":" + (w.Icon != null ? "i" : "")));
+        string order = string.Join("|", windows.Select(w => w.Handle.ToInt64()));
         double avail = _vertical ? ActualHeight : ActualWidth;
-        if (!force && signature == _signature && _row.Children.Count == windows.Count)
+        if (!force && order == _order && _row.Children.Count == windows.Count)
         {
+            for (int i = 0; i < windows.Count; i++)
+                PaintButton((Button)_row.Children[i], windows[i]);
             Resize(windows.Count, avail);
             return;
         }
-        _signature = signature;
+        _order = order;
         _row.Children.Clear();
         foreach (var window in windows)
             _row.Children.Add(MakeButton(window));
@@ -498,17 +500,16 @@ public sealed class TaskListView : Grid
     void Resize(int count, double avail)
     {
         if (count == 0 || avail < 8) return;
-        double fit = (avail - 4) / count;
-        bool overflow = fit < 46;
-        double length = overflow ? 168 : Math.Min(200, Math.Max(46, fit));
+        double size = Math.Max(Ui.PanelIcon() + 8, 28);
+        bool overflow = (size + 2) * count > avail;
         if (_vertical)
             _scroll.VerticalScrollBarVisibility = overflow ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden;
         else
             _scroll.HorizontalScrollBarVisibility = overflow ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden;
         foreach (Button button in _row.Children)
         {
-            if (_vertical) button.Height = length;
-            else button.Width = length;
+            if (_vertical) button.Height = size;
+            else button.Width = size;
         }
     }
 
@@ -516,53 +517,72 @@ public sealed class TaskListView : Grid
     {
         var button = Ui.Flat();
         button.HorizontalAlignment = HorizontalAlignment.Left;
-        button.HorizontalContentAlignment = HorizontalAlignment.Stretch;
-        button.Padding = new Thickness(6, 0, 6, 0);
-        button.Margin = new Thickness(1, 3, 1, 3);
-        if (window.IsForeground)
-            button.Background = new SolidColorBrush(Color.FromArgb(150, Ui.Accent().Color.R, Ui.Accent().Color.G, Ui.Accent().Color.B));
-        var row = new Grid { VerticalAlignment = VerticalAlignment.Center };
-        int textColumn = 0;
-        if (window.Icon != null)
+        button.Padding = new Thickness(4, 0, 4, 0);
+        button.Margin = new Thickness(1, 2, 1, 2);
+        PaintButton(button, window);
+        button.Click += (_, _) =>
         {
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            var icon = new Image { Source = window.Icon, Width = 16, Height = 16, Margin = new Thickness(0, 0, _vertical ? 0 : 6, 0), VerticalAlignment = VerticalAlignment.Center };
-            Grid.SetColumn(icon, 0);
-            row.Children.Add(icon);
-            textColumn = 1;
-        }
-        if (!_vertical)
-        {
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            var title = new TextBlock
-            {
-                Text = window.Title,
-                Foreground = Ui.PanelText(),
-                FontSize = 12,
-                VerticalAlignment = VerticalAlignment.Center,
-                TextTrimming = TextTrimming.CharacterEllipsis,
-                TextWrapping = TextWrapping.NoWrap
-            };
-            Grid.SetColumn(title, textColumn);
-            row.Children.Add(title);
-        }
-        button.Content = row;
-        button.ToolTip = window.Title;
-        button.Click += (_, _) => WindowTracker.Instance.Activate(window.Handle);
+            if (button.Tag is WindowInfo info)
+                WindowTracker.Instance.Activate(info.Handle);
+        };
         button.MouseUp += (_, e) =>
         {
-            if (e.ChangedButton == MouseButton.Middle)
+            if (e.ChangedButton == MouseButton.Middle && button.Tag is WindowInfo info)
             {
-                WindowTracker.Instance.Close(window.Handle);
+                WindowTracker.Instance.Close(info.Handle);
                 e.Handled = true;
             }
         };
         button.MouseRightButtonUp += (_, e) =>
         {
-            ShowWindowMenu(window, button);
+            if (button.Tag is WindowInfo info)
+                ShowWindowMenu(info, button);
             e.Handled = true;
         };
         return button;
+    }
+
+    static void PaintButton(Button button, WindowInfo window)
+    {
+        button.Tag = window;
+        button.ToolTip = window.Title;
+        button.Background = window.IsForeground
+            ? new SolidColorBrush(Color.FromArgb(150, Ui.Accent().Color.R, Ui.Accent().Color.G, Ui.Accent().Color.B))
+            : Brushes.Transparent;
+        double iconSize = Ui.LauncherIcon();
+        if (window.Icon != null)
+        {
+            if (button.Content is Image image)
+            {
+                if (!ReferenceEquals(image.Source, window.Icon))
+                    image.Source = window.Icon;
+                image.Width = iconSize;
+                image.Height = iconSize;
+                return;
+            }
+            var created = new Image
+            {
+                Source = window.Icon,
+                Width = iconSize,
+                Height = iconSize,
+                Stretch = Stretch.Uniform,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            };
+            RenderOptions.SetBitmapScalingMode(created, BitmapScalingMode.HighQuality);
+            button.Content = created;
+            return;
+        }
+        if (button.Content is TextBlock) return;
+        button.Content = new TextBlock
+        {
+            Text = "\uE737",
+            FontFamily = new FontFamily("Segoe MDL2 Assets"),
+            FontSize = iconSize,
+            Foreground = Ui.PanelText(),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
     }
 
     void ShowWindowMenu(WindowInfo window, FrameworkElement anchor)

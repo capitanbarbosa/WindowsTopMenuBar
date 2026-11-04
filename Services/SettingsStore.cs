@@ -19,6 +19,7 @@ public sealed class SettingsStore
     bool _dirty;
 
     public AppConfig Config { get; private set; } = new();
+    public bool FirstRun { get; private set; }
     public event Action<ConfigArea>? AreaChanged;
 
     SettingsStore()
@@ -38,6 +39,7 @@ public sealed class SettingsStore
     {
         if (!File.Exists(_path))
         {
+            FirstRun = true;
             Config = new AppConfig();
             Normalize(Config);
             SaveNow();

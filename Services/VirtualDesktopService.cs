@@ -20,6 +20,7 @@ public sealed class VirtualDesktopService
 
     IVirtualDesktopManagerInternal? _internal;
     IVirtualDesktopManagerPublic? _public;
+    bool _numberedOnFirstRun;
     string? _error;
     bool _attempted;
 
@@ -141,6 +142,27 @@ public sealed class VirtualDesktopService
         foreach (var d in all) Marshal.ReleaseComObject(d);
     }
 
+    void NumberDesktopsOnFirstRun()
+    {
+        if (_numberedOnFirstRun || !SettingsStore.Instance.FirstRun) return;
+        _numberedOnFirstRun = true;
+        try
+        {
+            var desktops = GetDesktops();
+            for (int i = 0; i < desktops.Count; i++)
+            {
+                string name = (i + 1).ToString();
+                if (!string.Equals(desktops[i].Name, name, StringComparison.Ordinal))
+                    Rename(desktops[i].Id, name);
+            }
+        }
+        catch (Exception ex)
+        {
+            _numberedOnFirstRun = false;
+            Log.Error("number desktops", ex);
+        }
+    }
+
     public void Rename(Guid id, string name)
     {
         if (!Ensure() || _internal == null) return;
@@ -183,6 +205,7 @@ public sealed class VirtualDesktopService
             Guid sid = SidManager;
             Guid iid = typeof(IVirtualDesktopManagerInternal).GUID;
             _internal = (IVirtualDesktopManagerInternal)shell.QueryService(ref sid, ref iid);
+            NumberDesktopsOnFirstRun();
             return true;
         }
         catch (Exception ex)

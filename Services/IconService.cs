@@ -17,19 +17,22 @@ public static class IconService
             var fromIcon = Get(app.IconPath, app.IconIndex, size);
             if (fromIcon != null) return fromIcon;
         }
-        if (!string.IsNullOrWhiteSpace(app.TargetPath))
+        if (!string.IsNullOrWhiteSpace(app.TargetPath) && File.Exists(Expand(app.TargetPath)))
         {
             var fromTarget = Get(app.TargetPath, 0, size);
             if (fromTarget != null) return fromTarget;
         }
         if (!string.IsNullOrWhiteSpace(app.Key) && File.Exists(app.Key))
             return Get(app.Key, 0, size);
+        if (!string.IsNullOrWhiteSpace(app.TargetPath))
+            return Get(app.TargetPath, 0, size);
         return null;
     }
 
     public static ImageSource? Get(string? path, int index, int size)
     {
         if (string.IsNullOrWhiteSpace(path)) return null;
+        path = Expand(path);
         size = Math.Clamp(size, 16, 256);
         var key = path + "|" + index + "|" + size;
         if (Cache.TryGetValue(key, out var cached)) return cached;
@@ -71,6 +74,12 @@ public static class IconService
         {
             return null;
         }
+    }
+
+    static string Expand(string path)
+    {
+        try { return Environment.ExpandEnvironmentVariables(path.Trim().Trim('"')); }
+        catch { return path; }
     }
 
     static ImageSource? LoadBitmap(string path, int size)

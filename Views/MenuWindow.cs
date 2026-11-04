@@ -456,10 +456,9 @@ public sealed class MenuWindow : Window
         int size = MenuConfig.IconPx(config.CategoryIconSize);
         foreach (var cat in cats)
         {
+            var mark = CategoryMark(cat.Id, cat.Glyph, apps, size);
             var row = new StackPanel { Orientation = Orientation.Horizontal };
-            var glyph = Ui.GlyphText(cat.Glyph, Math.Max(14, size));
-            glyph.Width = Math.Max(16, size);
-            row.Children.Add(glyph);
+            row.Children.Add(mark);
             if (config.ShowCategoryNames && !config.CategoriesHorizontal)
             {
                 row.Children.Add(new TextBlock
@@ -472,7 +471,7 @@ public sealed class MenuWindow : Window
             }
             var item = new ListBoxItem
             {
-                Content = config.CategoriesHorizontal || !config.ShowCategoryNames ? glyph : row,
+                Content = config.CategoriesHorizontal || !config.ShowCategoryNames ? mark : row,
                 Tag = cat.Id,
                 ToolTip = config.ShowTooltips ? cat.Name : null
             };
@@ -581,13 +580,7 @@ public sealed class MenuWindow : Window
     {
         var config = SettingsStore.Instance.Config.Menu;
         int size = MenuConfig.IconPx(config.AppIconSize);
-        var image = new Image
-        {
-            Width = size,
-            Height = size,
-            Stretch = Stretch.Uniform,
-            Source = IconService.Get(app, size)
-        };
+        var image = AppImage(IconService.Get(app, size), size);
         FrameworkElement content;
         if (icons)
         {
@@ -686,7 +679,16 @@ public sealed class MenuWindow : Window
             var node = new TreeViewItem { Header = group.Key, IsExpanded = true, Foreground = Ui.Text };
             foreach (var app in group)
             {
-                var child = new TreeViewItem { Header = app.DisplayName(SettingsStore.Instance.Config.Menu.ShowGenericNames), Tag = app, Foreground = Ui.Text };
+                int size = MenuConfig.IconPx(SettingsStore.Instance.Config.Menu.AppIconSize);
+                var head = new StackPanel { Orientation = Orientation.Horizontal };
+                head.Children.Add(AppImage(IconService.Get(app, size), Math.Min(size, 20), new Thickness(0, 0, 8, 0)));
+                head.Children.Add(new TextBlock
+                {
+                    Text = app.DisplayName(SettingsStore.Instance.Config.Menu.ShowGenericNames),
+                    VerticalAlignment = VerticalAlignment.Center,
+                    Foreground = Ui.Text
+                });
+                var child = new TreeViewItem { Header = head, Tag = app, Foreground = Ui.Text };
                 child.MouseDoubleClick += (_, e) =>
                 {
                     Launch(app);
@@ -775,6 +777,38 @@ public sealed class MenuWindow : Window
             Dialogs.Alert(this, ex.Message);
             _holding = false;
         }
+    }
+
+    static FrameworkElement CategoryMark(string id, string glyph, IReadOnlyList<AppEntry> apps, int size)
+    {
+        if (id is not ("favorites" or "recent" or "all"))
+        {
+            foreach (var app in apps)
+            {
+                if (!string.Equals(app.Category, id, StringComparison.Ordinal)) continue;
+                var icon = IconService.Get(app, size);
+                if (icon != null) return AppImage(icon, size);
+            }
+        }
+        var text = Ui.GlyphText(glyph, Math.Max(14, size));
+        text.Width = Math.Max(16, size);
+        text.VerticalAlignment = VerticalAlignment.Center;
+        return text;
+    }
+
+    static Image AppImage(ImageSource? source, int size, Thickness? margin = null)
+    {
+        var image = new Image
+        {
+            Source = source,
+            Width = size,
+            Height = size,
+            Stretch = Stretch.Uniform,
+            VerticalAlignment = VerticalAlignment.Center,
+            Margin = margin ?? new Thickness(0)
+        };
+        RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
+        return image;
     }
 
     static MenuItem Item(string header, Action action)

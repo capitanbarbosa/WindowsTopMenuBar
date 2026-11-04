@@ -53,6 +53,8 @@ public partial class SettingsWindow : Window
         {
             _loading = true;
             LockBox.IsChecked = SettingsStore.Instance.Config.Panel.Locked;
+            AllDisplaysBox.IsChecked = SettingsStore.Instance.Config.Panel.ShowOnAllDisplays;
+            MonitorBox.IsEnabled = !SettingsStore.Instance.Config.Panel.ShowOnAllDisplays;
             _loading = false;
         }
     }
@@ -67,6 +69,8 @@ public partial class SettingsWindow : Window
         SelectTag(MonitorBox, config.Panel.MonitorDevice);
         if (MonitorBox.SelectedIndex < 0 && MonitorBox.Items.Count > 0)
             MonitorBox.SelectedIndex = 0;
+        AllDisplaysBox.IsChecked = config.Panel.ShowOnAllDisplays;
+        MonitorBox.IsEnabled = !config.Panel.ShowOnAllDisplays;
         LockBox.IsChecked = config.Panel.Locked;
         SelectTag(HideBox, config.Panel.AutoHideMode);
         ReserveBox.IsChecked = config.Panel.ReserveSpace;
@@ -214,6 +218,7 @@ public partial class SettingsWindow : Window
             c.Panel.Mode = string.IsNullOrWhiteSpace(TagOf(ModeBox)) ? c.Panel.Mode : TagOf(ModeBox);
             c.Panel.Edge = string.IsNullOrWhiteSpace(TagOf(EdgeBox)) ? c.Panel.Edge : TagOf(EdgeBox);
             c.Panel.MonitorDevice = TagOf(MonitorBox);
+            c.Panel.ShowOnAllDisplays = AllDisplaysBox.IsChecked == true;
             c.Panel.Locked = LockBox.IsChecked == true;
             c.Panel.AutoHideMode = string.IsNullOrWhiteSpace(TagOf(HideBox)) ? c.Panel.AutoHideMode : TagOf(HideBox);
             c.Panel.ReserveSpace = ReserveBox.IsChecked == true && c.Panel.AutoHideMode == "Never";
@@ -226,6 +231,7 @@ public partial class SettingsWindow : Window
         _loading = true;
         ReserveBox.IsChecked = SettingsStore.Instance.Config.Panel.ReserveSpace;
         LengthSlider.IsEnabled = AutoLengthBox.IsChecked != true;
+        MonitorBox.IsEnabled = AllDisplaysBox.IsChecked != true;
         _loading = false;
     }
 

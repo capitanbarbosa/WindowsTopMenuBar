@@ -89,6 +89,8 @@
                             <TextBlock Text="Monitor:" Style="{StaticResource FieldLabel}"/>
                             <ComboBox x:Name="MonitorBox" Grid.Column="1" Width="280" HorizontalAlignment="Left" SelectionChanged="Geometry_Changed"/>
                         </Grid>
+                        <CheckBox x:Name="AllDisplaysBox" Content="Show on all displays" Click="Geometry_Click"
+                                  ToolTip="Put a copy of the bar on every monitor. Plugging a screen in or out updates the bars."/>
                         <CheckBox x:Name="LockBox" Content="Lock panel" Click="Geometry_Click"/>
                         <Grid Margin="0,6">
                             <Grid.ColumnDefinitions>

@@ -54,10 +54,8 @@ public partial class App : Application
             TaskScheduler.Default);
         WindowTracker.Instance.Start();
 
-        var panel = new PanelWindow();
-        MainWindow = panel;
-        SessionEnding += (_, _) => panel.AllowClose();
-        panel.Show();
+        SessionEnding += (_, _) => PanelManager.Instance.PrepareExit();
+        PanelManager.Instance.Start();
     }
 
     protected override void OnExit(ExitEventArgs e)

@@ -73,6 +73,7 @@ public sealed class PanelConfig
     public bool AutoHide { get; set; }
     public string AutoHideMode { get; set; } = "Never";
     public string MonitorDevice { get; set; } = "";
+    public bool ShowOnAllDisplays { get; set; }
     public bool DarkMode { get; set; } = true;
     public string BackgroundStyle { get; set; } = "Solid";
     public string Background { get; set; } = "#1E2D45";

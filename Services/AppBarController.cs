@@ -36,7 +36,7 @@ public sealed class AppBarController
         return -1;
     }
 
-    public bool TryApply(PanelConfig cfg, bool expanded, out RECT rect)
+    public bool TryApply(PanelConfig cfg, bool expanded, out RECT rect, string? device = null)
     {
         rect = default;
         if (_hwnd == IntPtr.Zero) return false;
@@ -44,9 +44,10 @@ public sealed class AppBarController
         var monitors = Win32.GetMonitors();
         if (monitors.Count == 0) return false;
 
+        string want = string.IsNullOrWhiteSpace(device) ? cfg.MonitorDevice : device;
         var mon = monitors.FirstOrDefault(m =>
-            !string.IsNullOrWhiteSpace(cfg.MonitorDevice) &&
-            string.Equals(m.Device, cfg.MonitorDevice, StringComparison.OrdinalIgnoreCase));
+            !string.IsNullOrWhiteSpace(want) &&
+            string.Equals(m.Device, want, StringComparison.OrdinalIgnoreCase));
         if (mon.Handle == IntPtr.Zero)
             mon = monitors.FirstOrDefault(m => m.Primary);
         if (mon.Handle == IntPtr.Zero)

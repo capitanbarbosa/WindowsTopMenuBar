@@ -31,7 +31,7 @@ public static class PanelPlugins
         new(PanelKinds.Clock, "Clock", "Shows the date and time.", "\uE787"),
         new(PanelKinds.Settings, "Settings", "Opens panel and menu settings.", "\uE713"),
         new(PanelKinds.DesktopShifter, "Workspace Switcher", "Switch between virtual desktops.", "\uE7C1"),
-        new(PanelKinds.TaskList, "Window Buttons", "An icon for each open window. Hover for the title.", "\uE737"),
+        new(PanelKinds.TaskList, "Window Buttons", "An icon for each application. Multiple windows of the same app stack on one icon.", "\uE737"),
         new(PanelKinds.ShowDesktop, "Show Desktop", "Hides windows and shows the desktop.", "\uE7F4"),
         new(PanelKinds.CpuGraph, "CPU Graph", "A Kali-style meter of recent CPU usage.", "\uE9D2")
     ];

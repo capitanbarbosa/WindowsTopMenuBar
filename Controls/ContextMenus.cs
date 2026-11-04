@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Threading;
@@ -25,12 +26,14 @@ public static class ContextMenus
         return timer;
     }
 
-    public static void Show(ContextMenu menu, FrameworkElement? target = null)
+    public static void Show(ContextMenu menu, FrameworkElement? target = null, PlacementMode placement = PlacementMode.MousePoint)
     {
         if (_open != null && _open != menu)
             _open.IsOpen = false;
 
         menu.StaysOpen = false;
+        menu.HasDropShadow = false;
+        menu.Placement = placement;
         if (target != null)
             menu.PlacementTarget = target;
         menu.Closed -= OnClosed;

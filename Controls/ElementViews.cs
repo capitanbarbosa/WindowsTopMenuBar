@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -477,24 +478,60 @@ public sealed class TaskListView : Grid
 
     void Rebuild(bool force)
     {
-        var windows = WindowTracker.Instance.Windows
+        var groups = GroupWindows(WindowTracker.Instance.Windows
             .Where(w => VirtualDesktopService.Instance.IsOnCurrentDesktop(w.Handle))
-            .Take(40)
-            .ToList();
-        string order = string.Join("|", windows.Select(w => w.Handle.ToInt64()));
+            .Take(80));
+        if (groups.Count > 40)
+            groups = groups.Take(40).ToList();
+        string order = string.Join("|", groups.Select(g => g.Key));
         double avail = _vertical ? ActualHeight : ActualWidth;
-        if (!force && order == _order && _row.Children.Count == windows.Count)
+        if (!force && order == _order && _row.Children.Count == groups.Count)
         {
-            for (int i = 0; i < windows.Count; i++)
-                PaintButton((Grid)_row.Children[i], windows[i]);
-            Resize(windows.Count, avail);
+            for (int i = 0; i < groups.Count; i++)
+                PaintButton((Grid)_row.Children[i], groups[i]);
+            Resize(groups.Count, avail);
             return;
         }
         _order = order;
         _row.Children.Clear();
+        foreach (var group in groups)
+            _row.Children.Add(MakeButton(group));
+        Resize(groups.Count, avail);
+    }
+
+    static List<WindowGroup> GroupWindows(IEnumerable<WindowInfo> windows)
+    {
+        var groups = new List<WindowGroup>();
+        var map = new Dictionary<string, WindowGroup>(StringComparer.OrdinalIgnoreCase);
         foreach (var window in windows)
-            _row.Children.Add(MakeButton(window));
-        Resize(windows.Count, avail);
+        {
+            string key = GroupKey(window);
+            if (map.TryGetValue(key, out var group))
+                group.Windows.Add(window);
+            else
+            {
+                group = new WindowGroup { Key = key, Windows = [window] };
+                map[key] = group;
+                groups.Add(group);
+            }
+        }
+        return groups;
+    }
+
+    static readonly HashSet<string> FrameHosts = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "ApplicationFrameHost"
+    };
+
+    static string GroupKey(WindowInfo window)
+    {
+        if (FrameHosts.Contains(window.ProcessName))
+            return "frame:" + window.Handle.ToInt64();
+        if (!string.IsNullOrWhiteSpace(window.ProcessPath))
+            return window.ProcessPath.Trim().ToLowerInvariant();
+        if (!string.IsNullOrWhiteSpace(window.ProcessName))
+            return "name:" + window.ProcessName.Trim().ToLowerInvariant();
+        return "hwnd:" + window.Handle.ToInt64();
     }
 
     void Resize(int count, double avail)
@@ -513,13 +550,56 @@ public sealed class TaskListView : Grid
         }
     }
 
-    Grid MakeButton(WindowInfo window)
+    Grid MakeButton(WindowGroup group)
     {
         var button = Ui.Flat();
         button.Margin = new Thickness(0);
         button.Padding = new Thickness(4, 0, 4, 0);
         button.HorizontalAlignment = HorizontalAlignment.Stretch;
         button.VerticalAlignment = VerticalAlignment.Stretch;
+        var image = new Image
+        {
+            Stretch = Stretch.Uniform,
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
+        var fallback = new TextBlock
+        {
+            Text = "\uE737",
+            FontFamily = new FontFamily("Segoe MDL2 Assets"),
+            Foreground = Ui.PanelText(),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        var badge = new Border
+        {
+            MinWidth = 12,
+            Height = 12,
+            CornerRadius = new CornerRadius(6),
+            Background = Brushes.White,
+            BorderBrush = Brushes.Black,
+            BorderThickness = new Thickness(1),
+            HorizontalAlignment = HorizontalAlignment.Right,
+            VerticalAlignment = VerticalAlignment.Bottom,
+            Padding = new Thickness(2, 0, 2, 0),
+            SnapsToDevicePixels = true,
+            IsHitTestVisible = false,
+            Visibility = Visibility.Collapsed,
+            Child = new TextBlock
+            {
+                FontSize = 8,
+                FontWeight = FontWeights.SemiBold,
+                Foreground = Brushes.Black,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center
+            }
+        };
+        var face = new Grid();
+        face.Children.Add(image);
+        face.Children.Add(fallback);
+        face.Children.Add(badge);
+        button.Content = face;
         var underline = new Border
         {
             Height = _vertical ? double.NaN : 2,
@@ -533,79 +613,140 @@ public sealed class TaskListView : Grid
         var host = new Grid { Margin = new Thickness(1, 0, 1, 0) };
         host.Children.Add(button);
         host.Children.Add(underline);
-        PaintButton(host, window);
+        PaintButton(host, group);
         button.Click += (_, _) =>
         {
-            if (host.Tag is WindowInfo info)
-                WindowTracker.Instance.Activate(info.Handle);
+            if (host.Tag is not WindowGroup current) return;
+            if (current.Windows.Count == 1)
+                WindowTracker.Instance.Activate(current.Head.Handle);
+            else
+                ShowGroupPicker(current, host);
         };
         button.MouseUp += (_, e) =>
         {
-            if (e.ChangedButton == MouseButton.Middle && host.Tag is WindowInfo info)
+            if (e.ChangedButton == MouseButton.Middle && host.Tag is WindowGroup current)
             {
-                WindowTracker.Instance.Close(info.Handle);
+                WindowTracker.Instance.Close(current.Head.Handle);
                 e.Handled = true;
             }
         };
         button.MouseRightButtonUp += (_, e) =>
         {
-            if (host.Tag is WindowInfo info)
-                ShowWindowMenu(info, button);
+            if (host.Tag is WindowGroup current)
+                ShowWindowMenu(current, button);
             e.Handled = true;
         };
         return host;
     }
 
-    void PaintButton(Grid host, WindowInfo window)
+    void PaintButton(Grid host, WindowGroup group)
     {
-        host.Tag = window;
+        host.Tag = group;
         if (host.Children[0] is not Button button || host.Children[1] is not Border underline)
             return;
-        button.ToolTip = window.Title;
+        var head = group.Head;
+        button.ToolTip = group.Windows.Count == 1
+            ? head.Title
+            : $"{(string.IsNullOrWhiteSpace(head.ProcessName) ? "Windows" : head.ProcessName)} ({group.Windows.Count})";
         button.Background = Brushes.Transparent;
-        underline.Background = window.IsForeground ? Ui.Accent() : Brushes.Transparent;
+        underline.Background = group.IsForeground ? Ui.Accent() : Brushes.Transparent;
+        if (button.Content is not Grid face || face.Children.Count < 3) return;
         double iconSize = Ui.LauncherIcon();
-        if (window.Icon != null)
+        if (face.Children[0] is Image image)
         {
-            if (button.Content is Image image)
-            {
-                if (!ReferenceEquals(image.Source, window.Icon))
-                    image.Source = window.Icon;
-                image.Width = iconSize;
-                image.Height = iconSize;
-                return;
-            }
-            var created = new Image
-            {
-                Source = window.Icon,
-                Width = iconSize,
-                Height = iconSize,
-                Stretch = Stretch.Uniform,
-                HorizontalAlignment = HorizontalAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-            RenderOptions.SetBitmapScalingMode(created, BitmapScalingMode.HighQuality);
-            button.Content = created;
-            return;
+            if (!ReferenceEquals(image.Source, head.Icon))
+                image.Source = head.Icon;
+            image.Width = iconSize;
+            image.Height = iconSize;
+            image.Visibility = head.Icon != null ? Visibility.Visible : Visibility.Collapsed;
         }
-        if (button.Content is TextBlock) return;
-        button.Content = new TextBlock
+        if (face.Children[1] is TextBlock fallback)
         {
-            Text = "\uE737",
-            FontFamily = new FontFamily("Segoe MDL2 Assets"),
-            FontSize = iconSize,
-            Foreground = Ui.PanelText(),
-            HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
-        };
+            fallback.FontSize = iconSize;
+            fallback.Visibility = head.Icon == null ? Visibility.Visible : Visibility.Collapsed;
+        }
+        if (face.Children[2] is Border badge && badge.Child is TextBlock label)
+        {
+            label.Text = group.Windows.Count.ToString();
+            badge.Visibility = group.Windows.Count > 1 ? Visibility.Visible : Visibility.Collapsed;
+        }
     }
 
-    void ShowWindowMenu(WindowInfo window, FrameworkElement anchor)
+    void ShowGroupPicker(WindowGroup group, FrameworkElement anchor)
     {
+        var menu = new ContextMenu { MinWidth = 240 };
+        foreach (var window in group.Windows)
+        {
+            var title = string.IsNullOrWhiteSpace(window.Title) ? window.ProcessName : window.Title;
+            var row = new StackPanel { Orientation = Orientation.Horizontal };
+            var icon = window.Icon ?? group.Head.Icon;
+            if (icon != null)
+            {
+                var image = new Image
+                {
+                    Source = icon,
+                    Width = 16,
+                    Height = 16,
+                    Margin = new Thickness(0, 0, 8, 0),
+                    VerticalAlignment = VerticalAlignment.Center
+                };
+                RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
+                row.Children.Add(image);
+            }
+            row.Children.Add(new TextBlock
+            {
+                Text = title,
+                VerticalAlignment = VerticalAlignment.Center,
+                FontWeight = window.IsForeground ? FontWeights.SemiBold : FontWeights.Normal
+            });
+            var item = new MenuItem { Header = row };
+            var handle = window.Handle;
+            item.Click += (_, _) => WindowTracker.Instance.Activate(handle);
+            menu.Items.Add(item);
+        }
+        if (!string.IsNullOrWhiteSpace(group.Head.ProcessPath))
+        {
+            menu.Items.Add(new Separator());
+            menu.Items.Add(Item("Launch new instance", () => LaunchInstance(group.Head)));
+        }
+        ContextMenus.Show(menu, anchor, GroupPlacement());
+    }
+
+    PlacementMode GroupPlacement() => SettingsStore.Instance.Config.Panel.Edge switch
+    {
+        "Bottom" => PlacementMode.Top,
+        "Left" => PlacementMode.Right,
+        "Right" => PlacementMode.Left,
+        _ => PlacementMode.Bottom
+    };
+
+    void LaunchInstance(WindowInfo window)
+    {
+        try
+        {
+            string folder = "";
+            try { folder = Path.GetDirectoryName(window.ProcessPath) ?? ""; } catch { }
+            AppCatalogService.LaunchTarget(window.ProcessPath, "", folder);
+        }
+        catch (Exception ex)
+        {
+            Dialogs.Alert(_actions.Owner(), "Couldn't start another window.\n" + ex.Message);
+        }
+    }
+
+    void ShowWindowMenu(WindowGroup group, FrameworkElement anchor)
+    {
+        var window = group.Head;
         var menu = new ContextMenu();
         menu.Items.Add(Item(window.IsForeground && !window.IsMinimized ? "Minimize" : "Activate", () => WindowTracker.Instance.Activate(window.Handle)));
         menu.Items.Add(Item("Maximize", () => WindowTracker.Instance.Maximize(window.Handle)));
         menu.Items.Add(Item("Close", () => WindowTracker.Instance.Close(window.Handle)));
+        if (group.Windows.Count > 1)
+            menu.Items.Add(Item("Close all", () =>
+            {
+                foreach (var item in group.Windows)
+                    WindowTracker.Instance.Close(item.Handle);
+            }));
         if (!string.IsNullOrWhiteSpace(window.ProcessPath))
             menu.Items.Add(Item("Pin to panel", () => _actions.PinPath(window.ProcessPath, window.ProcessName)));
 
@@ -632,6 +773,14 @@ public sealed class TaskListView : Grid
         var item = new MenuItem { Header = Ui.MenuLabel(header) };
         item.Click += (_, _) => action();
         return item;
+    }
+
+    sealed class WindowGroup
+    {
+        public required string Key { get; init; }
+        public required List<WindowInfo> Windows { get; init; }
+        public WindowInfo Head => Windows.FirstOrDefault(w => w.IsForeground) ?? Windows[0];
+        public bool IsForeground => Windows.Any(w => w.IsForeground);
     }
 }
 

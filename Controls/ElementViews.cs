@@ -85,10 +85,10 @@ public static class ElementViews
     static FrameworkElement LauncherButton(PanelItem item, PanelActions actions, bool vertical)
     {
         var button = Ui.Flat();
-        double iconSize = Ui.PanelIcon();
+        double iconSize = Ui.LauncherIcon();
         var icon = IconService.Get(string.IsNullOrWhiteSpace(item.IconPath) ? item.Target : item.IconPath, item.IconIndex, (int)Math.Ceiling(iconSize));
-        button.Content = icon != null
-            ? new Image { Source = icon, Width = iconSize, Height = iconSize }
+        FrameworkElement content = icon != null
+            ? new Image { Source = icon, Width = iconSize, Height = iconSize, Stretch = Stretch.Uniform }
             : new TextBlock
             {
                 Text = (string.IsNullOrWhiteSpace(item.Label) ? "A" : item.Label)[0].ToString(),
@@ -98,6 +98,9 @@ public static class ElementViews
                 HorizontalAlignment = HorizontalAlignment.Center,
                 VerticalAlignment = VerticalAlignment.Center
             };
+        if (content is Image image)
+            RenderOptions.SetBitmapScalingMode(image, BitmapScalingMode.HighQuality);
+        button.Content = content;
         button.Padding = new Thickness(6, 0, 6, 0);
         button.ToolTip = string.IsNullOrWhiteSpace(item.Label) ? item.Target : item.Label;
         button.Click += (_, _) =>

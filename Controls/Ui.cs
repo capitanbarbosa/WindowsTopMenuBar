@@ -70,6 +70,8 @@ public static class Ui
         return Math.Clamp(panel.Height - 12, 16, 48);
     }
 
+    public static double LauncherIcon() => Math.Clamp(PanelIcon() - 6, 14, 32);
+
     static SolidColorBrush Freeze(string hex)
     {
         var brush = new SolidColorBrush((Color)ColorConverter.ConvertFromString(hex));

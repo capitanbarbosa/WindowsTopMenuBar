@@ -36,7 +36,29 @@ public static class ElementViews
     {
         var menu = new ContextMenu();
         if (item.Kind == PanelKinds.Separator)
+        {
             menu.Items.Add(Entry("Properties", () => Dialogs.SeparatorProperties(actions.Owner(), item)));
+            var expand = new MenuItem { Header = "Expand", IsCheckable = true, IsChecked = item.Expand };
+            expand.Click += (_, _) =>
+            {
+                item.Expand = expand.IsChecked;
+                SettingsStore.Instance.Update(_ => { }, ConfigArea.PanelItems);
+            };
+            menu.Items.Add(expand);
+            var style = new MenuItem { Header = "Style" };
+            foreach (var name in new[] { "Separator", "Transparent", "Handle", "Dots" })
+            {
+                string choice = name;
+                var row = new MenuItem { Header = name, IsCheckable = true, IsChecked = item.Style == choice };
+                row.Click += (_, _) =>
+                {
+                    item.Style = choice;
+                    SettingsStore.Instance.Update(_ => { }, ConfigArea.PanelItems);
+                };
+                style.Items.Add(row);
+            }
+            menu.Items.Add(style);
+        }
         if (item.Kind == PanelKinds.Launcher)
             menu.Items.Add(Entry("Change application…", () => actions.ChangeLauncher(item)));
         menu.Items.Add(Entry("Move left", () => actions.Move(item, -1)));

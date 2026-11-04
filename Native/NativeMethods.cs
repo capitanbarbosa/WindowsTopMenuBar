@@ -51,6 +51,7 @@ public struct SHFILEINFO
 public delegate bool MonitorEnumProc(IntPtr hMonitor, IntPtr hdc, IntPtr lprc, IntPtr data);
 public delegate bool EnumWindowsProc(IntPtr hwnd, IntPtr lParam);
 public delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType, IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+public delegate IntPtr HookProc(int nCode, IntPtr wParam, IntPtr lParam);
 
 public static class Win32
 {
@@ -82,6 +83,12 @@ public static class Win32
     public const int WM_DISPLAYCHANGE = 0x007E;
     public const int WM_HOTKEY = 0x0312;
     public const int WM_MOUSEACTIVATE = 0x0021;
+    public const int WM_LBUTTONDOWN = 0x0201;
+    public const int WM_RBUTTONDOWN = 0x0204;
+    public const int WM_RBUTTONUP = 0x0205;
+    public const int WM_MBUTTONDOWN = 0x0207;
+    public const int WM_NCLBUTTONDOWN = 0x00A1;
+    public const int WH_MOUSE_LL = 14;
     public const int WM_DPICHANGED = 0x02E0;
     public const int WM_SETTINGCHANGE = 0x001A;
     public const int MA_NOACTIVATE = 3;
@@ -187,6 +194,24 @@ public static class Win32
 
     [DllImport("user32.dll")]
     public static extern bool GetCursorPos(out POINT lpPoint);
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr WindowFromPoint(POINT point);
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr GetParent(IntPtr hWnd);
+
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode, EntryPoint = "GetModuleHandleW")]
+    public static extern IntPtr GetModuleHandle(string? lpModuleName);
+
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern IntPtr SetWindowsHookEx(int idHook, HookProc lpfn, IntPtr hMod, uint dwThreadId);
+
+    [DllImport("user32.dll")]
+    public static extern bool UnhookWindowsHookEx(IntPtr hhk);
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr CallNextHookEx(IntPtr hhk, int nCode, IntPtr wParam, IntPtr lParam);
 
     [DllImport("user32.dll")]
     public static extern IntPtr GetForegroundWindow();
@@ -372,6 +397,16 @@ public struct POINT
 {
     public int X;
     public int Y;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+public struct MSLLHOOKSTRUCT
+{
+    public POINT pt;
+    public uint mouseData;
+    public uint flags;
+    public uint time;
+    public IntPtr dwExtraInfo;
 }
 
 [StructLayout(LayoutKind.Sequential)]

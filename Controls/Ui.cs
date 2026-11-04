@@ -98,23 +98,19 @@ public static class Ui
             return image;
         }
 
-        var grid = new Grid { Width = size, Height = size };
-        grid.Children.Add(new Border
-        {
-            Background = Accent(),
-            CornerRadius = new CornerRadius(Math.Max(2, size * 0.18))
-        });
-        grid.Children.Add(new TextBlock
+        return new TextBlock
         {
             Text = "W",
+            Width = size,
+            Height = size,
             Foreground = Brushes.White,
             FontWeight = FontWeights.SemiBold,
             FontFamily = new FontFamily("Segoe UI"),
-            FontSize = size * 0.58,
+            FontSize = size * 0.78,
             HorizontalAlignment = HorizontalAlignment.Center,
-            VerticalAlignment = VerticalAlignment.Center
-        });
-        return grid;
+            VerticalAlignment = VerticalAlignment.Center,
+            TextAlignment = TextAlignment.Center
+        };
     }
 
     static ImageSource? MarkImage()

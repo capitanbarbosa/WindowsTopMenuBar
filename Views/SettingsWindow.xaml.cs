@@ -511,8 +511,7 @@ public partial class SettingsWindow : Window
         };
         menu.Items.Add(save);
         menu.Items.Add(restore);
-        menu.PlacementTarget = (FrameworkElement)sender;
-        menu.IsOpen = true;
+        ContextMenus.Show(menu, (FrameworkElement)sender);
     }
 
     void Startup_Click(object sender, RoutedEventArgs e)

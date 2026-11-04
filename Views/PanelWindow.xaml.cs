@@ -720,7 +720,7 @@ public partial class PanelWindow : Window
         menu.Items.Add(new Separator());
         menu.Items.Add(Item("Open crash log", Log.OpenLogs));
         menu.Items.Add(Item("Quit", Quit));
-        menu.IsOpen = true;
+        ContextMenus.Show(menu, this);
     }
 
     void OnDragOver(object sender, DragEventArgs e)

@@ -711,8 +711,7 @@ public sealed class MenuWindow : Window
         }));
         menu.Items.Add(Item(fav ? "Remove from favorites" : "Add to favorites", () => SettingsStore.Instance.ToggleFavorite(app.Key)));
         menu.Items.Add(Item("Open file location", () => OpenLocation(app)));
-        menu.PlacementTarget = anchor;
-        menu.IsOpen = true;
+        ContextMenus.Show(menu, anchor);
     }
 
     static void OpenLocation(AppEntry app)

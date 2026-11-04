@@ -45,8 +45,7 @@ public static class ElementViews
         menu.Items.Add(Entry("Panel settings", actions.OpenSettings));
         menu.Items.Add(Entry(actions.IsLocked() ? "Unlock panel" : "Lock panel", actions.ToggleLock));
         menu.Items.Add(Entry("Quit", actions.Quit));
-        menu.PlacementTarget = anchor;
-        menu.IsOpen = true;
+        ContextMenus.Show(menu, anchor);
     }
 
     static FrameworkElement MenuButton(PanelItem item, PanelActions actions, bool vertical)
@@ -560,8 +559,7 @@ public sealed class TaskListView : Grid
             }
             menu.Items.Add(move);
         }
-        menu.PlacementTarget = anchor;
-        menu.IsOpen = true;
+        ContextMenus.Show(menu, anchor);
     }
 
     static MenuItem Item(string header, Action action)
@@ -769,8 +767,7 @@ public sealed class DesktopShifterView : StackPanel
             _signature = "";
             Refresh();
         }));
-        menu.PlacementTarget = anchor;
-        menu.IsOpen = true;
+        ContextMenus.Show(menu, anchor);
     }
 
     void OnWheel(object sender, MouseWheelEventArgs e)

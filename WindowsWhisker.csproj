@@ -18,6 +18,6 @@
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
   <ItemGroup>
-    <Resource Include="Assets\whisker-mark.png" />
+    <Resource Include="Assets\*.png" />
   </ItemGroup>
 </Project>

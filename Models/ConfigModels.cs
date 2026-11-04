@@ -120,6 +120,9 @@ public sealed class PanelItem
     [JsonIgnore]
     public string Glyph => PanelPlugins.GlyphFor(Kind);
 
+    public const string PackedTerminalIcon = "pack://application:,,,/Assets/terminal.png";
+    public const string PackedFilesIcon = "pack://application:,,,/Assets/folder_open.png";
+
     public static PanelItem Launcher(string target, string label, string? arguments = null, string? workingDirectory = null)
     {
         return new PanelItem
@@ -128,8 +131,28 @@ public sealed class PanelItem
             Target = target,
             Label = label,
             Arguments = arguments ?? "",
-            WorkingDirectory = workingDirectory ?? ""
+            WorkingDirectory = workingDirectory ?? "",
+            IconPath = PackedIconFor(label) ?? ""
         };
+    }
+
+    public static string? PackedIconFor(string? label) => label switch
+    {
+        "Terminal" => PackedTerminalIcon,
+        "Files" => PackedFilesIcon,
+        _ => null
+    };
+
+    public string ResolveIconPath()
+    {
+        if (!string.IsNullOrWhiteSpace(IconPath))
+        {
+            string ext = Path.GetExtension(IconPath);
+            if (!ext.Equals(".exe", StringComparison.OrdinalIgnoreCase) &&
+                !ext.Equals(".dll", StringComparison.OrdinalIgnoreCase))
+                return IconPath;
+        }
+        return PackedIconFor(Label) ?? (string.IsNullOrWhiteSpace(IconPath) ? Target : IconPath);
     }
 
     public static List<PanelItem> CreateDefault()

@@ -85,7 +85,7 @@ public static class ElementViews
     {
         var button = Ui.Flat();
         double iconSize = Ui.LauncherIcon();
-        var icon = IconService.Get(string.IsNullOrWhiteSpace(item.IconPath) ? item.Target : item.IconPath, item.IconIndex, (int)Math.Ceiling(iconSize));
+        var icon = IconService.Get(item.ResolveIconPath(), item.IconIndex, (int)Math.Ceiling(iconSize));
         FrameworkElement content = icon != null
             ? new Image { Source = icon, Width = iconSize, Height = iconSize, Stretch = Stretch.Uniform }
             : new TextBlock

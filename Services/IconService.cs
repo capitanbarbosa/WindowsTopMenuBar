@@ -38,7 +38,8 @@ public static class IconService
         try
         {
             var ext = Path.GetExtension(path).ToLowerInvariant();
-            if (ext is ".png" or ".jpg" or ".jpeg" or ".bmp" or ".gif" or ".tif" or ".tiff")
+            if (path.StartsWith("pack:", StringComparison.OrdinalIgnoreCase) ||
+                ext is ".png" or ".jpg" or ".jpeg" or ".bmp" or ".gif" or ".tif" or ".tiff")
                 image = LoadBitmap(path, size);
             else
                 image = Extract(path, index, size);
@@ -76,7 +77,7 @@ public static class IconService
     {
         var img = new BitmapImage();
         img.BeginInit();
-        img.UriSource = new Uri(path);
+        img.UriSource = new Uri(path, UriKind.RelativeOrAbsolute);
         img.CacheOption = BitmapCacheOption.OnLoad;
         img.DecodePixelWidth = size;
         img.EndInit();

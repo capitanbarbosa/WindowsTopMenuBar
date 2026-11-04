@@ -49,6 +49,12 @@ public partial class SettingsWindow : Window
     {
         if (area == ConfigArea.PanelItems)
             RefreshElements();
+        if (area == ConfigArea.PanelGeometry)
+        {
+            _loading = true;
+            LockBox.IsChecked = SettingsStore.Instance.Config.Panel.Locked;
+            _loading = false;
+        }
     }
 
     void LoadUi()

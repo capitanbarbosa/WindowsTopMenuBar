@@ -50,7 +50,8 @@ public partial class PanelWindow : Window
             OpenSettings = () => OpenSettings("panel"),
             ChangeLauncher = ChangeLauncher,
             PinPath = PinPath,
-            LockPanel = () => SetUnlocked(false),
+            IsLocked = () => SettingsStore.Instance.Config.Panel.Locked,
+            ToggleLock = ToggleLock,
             Quit = Quit,
             Owner = () => this
         };
@@ -556,6 +557,8 @@ public partial class PanelWindow : Window
         }
     }
 
+    void ToggleLock() => SetUnlocked(SettingsStore.Instance.Config.Panel.Locked);
+
     void SetUnlocked(bool on, bool persist = true)
     {
         _unlocked = on;
@@ -693,7 +696,7 @@ public partial class PanelWindow : Window
         var menu = new ContextMenu();
         menu.Items.Add(Item("Panel settings", () => OpenSettings("panel")));
         menu.Items.Add(Item("Menu settings", () => OpenSettings("general")));
-        menu.Items.Add(Item(_unlocked ? "Lock panel" : "Unlock panel", () => SetUnlocked(!_unlocked)));
+        menu.Items.Add(Item(SettingsStore.Instance.Config.Panel.Locked ? "Unlock panel" : "Lock panel", ToggleLock));
         menu.Items.Add(new Separator());
         var add = new MenuItem { Header = "Add element" };
         add.Items.Add(Item("Applications menu", () => AddKind(PanelKinds.Menu)));

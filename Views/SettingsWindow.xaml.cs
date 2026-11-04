@@ -239,7 +239,83 @@ public partial class SettingsWindow : Window
 
     void PaintSwatch(string hex)
     {
-        ColorSwatch.Background = Ui.Brush(hex, "#1E2D45");
+        hex = NormalizeHex(hex) ?? "#1E2D45";
+        var brush = Ui.Brush(hex, "#1E2D45");
+        ColorSwatch.Background = brush;
+        ColorSwatchPanel.Background = brush;
+        SetHexText(HexBox, hex);
+        SetHexText(HexBoxPanel, hex);
+    }
+
+    static void SetHexText(TextBox box, string hex)
+    {
+        if (box.Text != hex)
+            box.Text = hex;
+    }
+
+    void Hex_TextChanged(object sender, TextChangedEventArgs e)
+    {
+        if (_loading) return;
+        if (sender is TextBox box && NormalizeHex(box.Text) != null)
+            ApplyHex(box, revertIfInvalid: false);
+    }
+
+    void Hex_LostFocus(object sender, RoutedEventArgs e)
+    {
+        if (sender is TextBox box)
+            ApplyHex(box, revertIfInvalid: true);
+    }
+
+    void Hex_KeyDown(object sender, KeyEventArgs e)
+    {
+        if (e.Key == Key.Enter && sender is TextBox box)
+        {
+            ApplyHex(box, revertIfInvalid: true);
+            e.Handled = true;
+        }
+    }
+
+    void ApplyHex(TextBox source, bool revertIfInvalid)
+    {
+        if (_loading) return;
+        string? hex = NormalizeHex(source.Text);
+        if (hex == null)
+        {
+            if (revertIfInvalid)
+                PaintSwatch(SettingsStore.Instance.Config.Panel.Background);
+            return;
+        }
+
+        var panel = SettingsStore.Instance.Config.Panel;
+        if (string.Equals(panel.Background, hex, StringComparison.OrdinalIgnoreCase) && panel.BackgroundStyle == "Solid")
+        {
+            _loading = true;
+            PaintSwatch(hex);
+            _loading = false;
+            return;
+        }
+
+        _loading = true;
+        PaintSwatch(hex);
+        SelectTag(BackgroundStyleBox, "Solid");
+        _loading = false;
+        SettingsStore.Instance.Update(c =>
+        {
+            c.Panel.Background = hex;
+            c.Panel.BackgroundStyle = "Solid";
+        }, ConfigArea.PanelChrome);
+    }
+
+    static string? NormalizeHex(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        string text = value.Trim();
+        if (text.StartsWith('#')) text = text[1..];
+        if (text.Length == 3 && text.All(Uri.IsHexDigit))
+            return $"#{text[0]}{text[0]}{text[1]}{text[1]}{text[2]}{text[2]}".ToUpperInvariant();
+        if (text.Length == 6 && text.All(Uri.IsHexDigit))
+            return "#" + text.ToUpperInvariant();
+        return null;
     }
 
     void SaveMenu()
@@ -369,6 +445,7 @@ public partial class SettingsWindow : Window
         };
         if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
         string hex = $"#{dialog.Color.R:X2}{dialog.Color.G:X2}{dialog.Color.B:X2}";
+        HexBox.Text = hex;
         PaintSwatch(hex);
         SettingsStore.Instance.Update(c =>
         {

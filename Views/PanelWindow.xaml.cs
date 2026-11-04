@@ -50,6 +50,8 @@ public partial class PanelWindow : Window
             OpenSettings = () => OpenSettings("panel"),
             ChangeLauncher = ChangeLauncher,
             PinPath = PinPath,
+            LockPanel = () => SetUnlocked(false),
+            Quit = Quit,
             Owner = () => this
         };
         _hideTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(450) };
@@ -337,7 +339,7 @@ public partial class PanelWindow : Window
         overlay.Child = grid;
         overlay.MouseRightButtonUp += (_, e) =>
         {
-            ElementViews.ShowItemMenu(item, _actions, overlay);
+            ShowPanelMenu();
             e.Handled = true;
         };
         return overlay;

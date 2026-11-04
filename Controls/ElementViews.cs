@@ -42,6 +42,8 @@ public static class ElementViews
         menu.Items.Add(Entry("Remove", () => actions.Remove(item)));
         menu.Items.Add(new Separator());
         menu.Items.Add(Entry("Panel settings", actions.OpenSettings));
+        menu.Items.Add(Entry("Lock panel", actions.LockPanel));
+        menu.Items.Add(Entry("Quit", actions.Quit));
         menu.PlacementTarget = anchor;
         menu.IsOpen = true;
     }

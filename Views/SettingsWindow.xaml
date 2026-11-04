@@ -183,7 +183,13 @@
                                 <ColumnDefinition Width="*"/>
                             </Grid.ColumnDefinitions>
                             <TextBlock Text="Color:" Style="{StaticResource FieldLabel}"/>
-                            <Button x:Name="ColorSwatch" Grid.Column="1" Width="36" Height="28" HorizontalAlignment="Left" Click="Color_Click" ToolTip="Choose a panel color"/>
+                            <StackPanel Grid.Column="1" Orientation="Horizontal">
+                                <Button x:Name="ColorSwatchPanel" Width="36" Height="28" Click="Color_Click" ToolTip="Choose a panel color"/>
+                                <TextBox x:Name="HexBoxPanel" Width="108" Margin="8,0,0,0" VerticalAlignment="Center"
+                                         FontFamily="Consolas" MaxLength="7"
+                                         ToolTip="Panel background hex, like #1E2D45"
+                                         TextChanged="Hex_TextChanged" LostFocus="Hex_LostFocus" KeyDown="Hex_KeyDown"/>
+                            </StackPanel>
                         </Grid>
                         <Grid Margin="0,4">
                             <Grid.ColumnDefinitions>
@@ -345,6 +351,21 @@
 
             <ScrollViewer x:Name="PageAppearance" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
                 <StackPanel Margin="18,8,18,12">
+                    <TextBlock Text="Panel" Style="{StaticResource GroupHeader}"/>
+                    <Grid Margin="0,4,0,10">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="180"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Text="Background:" Style="{StaticResource FieldLabel}"/>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal">
+                            <Button x:Name="ColorSwatch" Width="36" Height="28" Click="Color_Click" ToolTip="Choose a panel color"/>
+                            <TextBox x:Name="HexBox" Width="108" Margin="8,0,0,0" VerticalAlignment="Center"
+                                     FontFamily="Consolas" MaxLength="7"
+                                     ToolTip="Panel background hex, like #1E2D45"
+                                     TextChanged="Hex_TextChanged" LostFocus="Hex_LostFocus" KeyDown="Hex_KeyDown"/>
+                        </StackPanel>
+                    </Grid>
                     <TextBlock Text="Menu" Style="{StaticResource GroupHeader}"/>
                     <CheckBox x:Name="HorizontalBox" Content="Position categories horizontally" Click="Menu_Click"/>
                     <CheckBox x:Name="CategoriesLeftBox" Content="Position categories on left" Click="Menu_Click"/>

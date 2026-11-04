@@ -481,6 +481,13 @@ public partial class PanelWindow : Window
 
     static void InsertSmart(List<PanelItem> items, PanelItem item)
     {
+        if (item.Kind == PanelKinds.Settings)
+        {
+            int clock = items.FindLastIndex(i => i.Kind == PanelKinds.Clock);
+            if (clock >= 0) items.Insert(clock + 1, item);
+            else items.Add(item);
+            return;
+        }
         int index = items.FindIndex(i =>
             i.Kind is PanelKinds.TaskList or PanelKinds.Spacer or PanelKinds.DesktopShifter or PanelKinds.Clock ||
             (i.Kind == PanelKinds.Separator && i.Expand));
@@ -708,6 +715,7 @@ public partial class PanelWindow : Window
         add.Items.Add(Item("Spacer", () => AddKind(PanelKinds.Spacer)));
         add.Items.Add(Item("Clipboard", () => AddKind(PanelKinds.Clipboard)));
         add.Items.Add(Item("Show desktop", () => AddKind(PanelKinds.ShowDesktop)));
+        add.Items.Add(Item("Settings", () => AddKind(PanelKinds.Settings)));
         menu.Items.Add(add);
         menu.Items.Add(new Separator());
         menu.Items.Add(Item("Open crash log", Log.OpenLogs));

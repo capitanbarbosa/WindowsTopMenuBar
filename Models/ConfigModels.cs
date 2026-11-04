@@ -13,6 +13,7 @@ public static class PanelKinds
     public const string Spacer = "Spacer";
     public const string ShowDesktop = "ShowDesktop";
     public const string Clipboard = "Clipboard";
+    public const string Settings = "Settings";
 }
 
 public sealed record PanelPlugin(string Kind, string Name, string Description, string Glyph);
@@ -27,6 +28,7 @@ public static class PanelPlugins
         new(PanelKinds.Clipboard, "Clipboard", "Shortcut that opens Windows clipboard history.", "\uE8C8"),
         new(PanelKinds.Menu, "Applications Menu", "The Whisker-style application menu.", "\uE700"),
         new(PanelKinds.Clock, "Clock", "Shows the date and time.", "\uE787"),
+        new(PanelKinds.Settings, "Settings", "Opens panel and menu settings.", "\uE713"),
         new(PanelKinds.DesktopShifter, "Workspace Switcher", "Switch between virtual desktops.", "\uE7C1"),
         new(PanelKinds.TaskList, "Window Buttons", "A button for each open window.", "\uE737"),
         new(PanelKinds.ShowDesktop, "Show Desktop", "Hides windows and shows the desktop.", "\uE7F4")
@@ -111,6 +113,7 @@ public sealed class PanelItem
         PanelKinds.Spacer => "Spacer",
         PanelKinds.ShowDesktop => "Show Desktop",
         PanelKinds.Clipboard => "Clipboard",
+        PanelKinds.Settings => "Settings",
         _ => Kind
     };
 
@@ -146,6 +149,7 @@ public sealed class PanelItem
         items.Add(new PanelItem { Kind = PanelKinds.DesktopShifter });
         items.Add(new PanelItem { Kind = PanelKinds.Separator, Style = "Transparent", Expand = true });
         items.Add(new PanelItem { Kind = PanelKinds.Clock });
+        items.Add(new PanelItem { Kind = PanelKinds.Settings });
         return items;
     }
 

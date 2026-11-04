@@ -23,6 +23,7 @@ public static class ElementViews
             PanelKinds.Clock => new ClockView(actions, vertical),
             PanelKinds.ShowDesktop => ShowDesktopButton(item, actions, vertical),
             PanelKinds.Clipboard => ClipboardButton(item, actions, vertical),
+            PanelKinds.Settings => SettingsButton(item, actions, vertical),
             PanelKinds.Spacer => Spacer(item, actions, vertical),
             _ => Separator(item, actions, vertical)
         };
@@ -165,6 +166,25 @@ public static class ElementViews
         }
         button.Content = row;
         button.Click += (_, _) => SessionCommands.OpenClipboard();
+        AttachItemMenu(button, item, actions);
+        return button;
+    }
+
+    static FrameworkElement SettingsButton(PanelItem item, PanelActions actions, bool vertical)
+    {
+        var button = Ui.Flat();
+        button.ToolTip = "Settings";
+        button.Padding = new Thickness(6, 0, 10, 0);
+        button.Content = new TextBlock
+        {
+            Text = Ui.Glyph("settings"),
+            FontFamily = new FontFamily("Segoe MDL2 Assets"),
+            FontSize = Math.Max(14, Ui.PanelIcon() - 2),
+            Foreground = Ui.PanelText(),
+            HorizontalAlignment = HorizontalAlignment.Center,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        button.Click += (_, _) => actions.OpenSettings();
         AttachItemMenu(button, item, actions);
         return button;
     }

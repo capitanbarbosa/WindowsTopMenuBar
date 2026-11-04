@@ -56,6 +56,8 @@ public sealed class SettingsStore
             Config = new AppConfig();
         }
         Normalize(Config);
+        if (EnsureSettingsShortcut(Config))
+            ScheduleSave();
     }
 
     public void Update(Action<AppConfig> change, ConfigArea area)
@@ -208,6 +210,17 @@ public sealed class SettingsStore
         {
             Log.Error("config save failed", ex);
         }
+    }
+
+    static bool EnsureSettingsShortcut(AppConfig config)
+    {
+        if (config.Panel.Items.Any(i => i.Kind == PanelKinds.Settings))
+            return false;
+        int clock = config.Panel.Items.FindLastIndex(i => i.Kind == PanelKinds.Clock);
+        var settings = new PanelItem { Kind = PanelKinds.Settings };
+        if (clock >= 0) config.Panel.Items.Insert(clock + 1, settings);
+        else config.Panel.Items.Add(settings);
+        return true;
     }
 
     static void Normalize(AppConfig config)

@@ -196,6 +196,19 @@ public sealed class SettingsStore
         ScheduleSave();
     }
 
+    public void RecordLaunch(string? path, string? aumid = null)
+    {
+        if (string.IsNullOrWhiteSpace(path) && string.IsNullOrWhiteSpace(aumid)) return;
+        var app = AppCatalogService.Instance.FindByTarget(path, aumid);
+        if (app != null)
+        {
+            PushRecent(app.Key);
+            return;
+        }
+        if (!AppCatalogService.Instance.IsReady && !string.IsNullOrWhiteSpace(path))
+            PushRecent(path);
+    }
+
     public void ToggleFavorite(string key)
     {
         if (Config.Favorites.RemoveAll(k => string.Equals(k, key, StringComparison.OrdinalIgnoreCase)) == 0)
@@ -252,6 +265,12 @@ public sealed class SettingsStore
         config.Menu.ConfirmSessionCommands = true;
         config.Menu.SearchDescriptions = true;
         config.Menu.SearchExecutables = true;
+        config.Menu.DefaultCategory = "Favorites";
+        config.Menu.HoverSwitch = true;
+        config.Menu.StayVisibleOnFocusLoss = false;
+        config.Menu.SortCategories = false;
+        config.Menu.RecentCount = 10;
+        config.Menu.RecentIncludeFavorites = false;
         config.Profiles ??= [];
         config.Panel.Height = Math.Clamp(config.Panel.Height, 16, 128);
         config.Panel.Rows = Math.Clamp(config.Panel.Rows, 1, 6);
@@ -278,7 +297,6 @@ public sealed class SettingsStore
         config.Menu.MenuWidth = 570;
         config.Menu.MenuHeight = 700;
         config.Menu.BackgroundOpacity = 100;
-        config.Menu.RecentCount = Math.Clamp(config.Menu.RecentCount, 1, 30);
         foreach (var item in config.Panel.Items)
         {
             if (string.IsNullOrWhiteSpace(item.Id))

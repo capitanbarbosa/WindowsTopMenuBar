@@ -131,6 +131,7 @@ public static class ElementViews
             try
             {
                 AppCatalogService.LaunchTarget(item.Target, item.Arguments, item.WorkingDirectory);
+                SettingsStore.Instance.RecordLaunch(item.Target);
             }
             catch (Exception ex)
             {
@@ -727,6 +728,7 @@ public sealed class TaskListView : Grid
             string folder = "";
             try { folder = Path.GetDirectoryName(window.ProcessPath) ?? ""; } catch { }
             AppCatalogService.LaunchTarget(window.ProcessPath, "", folder);
+            SettingsStore.Instance.RecordLaunch(window.ProcessPath);
         }
         catch (Exception ex)
         {

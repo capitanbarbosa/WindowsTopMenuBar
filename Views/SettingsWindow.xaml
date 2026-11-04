@@ -14,7 +14,6 @@
             <ToggleButton x:Name="TabPanel" Content="Panel" Style="{StaticResource TabToggle}" Tag="panel" Click="Tab_Click"/>
             <ToggleButton x:Name="TabItems" Content="Items" Style="{StaticResource TabToggle}" Tag="items" Click="Tab_Click"/>
             <ToggleButton x:Name="TabAppearance" Content="Appearance" Style="{StaticResource TabToggle}" Tag="appearance" Click="Tab_Click"/>
-            <ToggleButton x:Name="TabBehavior" Content="Behavior" Style="{StaticResource TabToggle}" Tag="behavior" Click="Tab_Click"/>
         </StackPanel>
 
         <Border DockPanel.Dock="Bottom" BorderBrush="#3E4252" BorderThickness="0,1,0,0" Padding="12,10">
@@ -322,34 +321,6 @@
                             <ComboBoxItem Content="Hidden" Tag="Hidden"/>
                         </ComboBox>
                     </Grid>
-                </StackPanel>
-            </ScrollViewer>
-
-            <ScrollViewer x:Name="PageBehavior" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
-                <StackPanel Margin="18,8,18,12">
-                    <TextBlock Text="Default Category" Style="{StaticResource GroupHeader}"/>
-                    <RadioButton x:Name="FavRadio" GroupName="DefaultCategory" Content="Favorites" Click="Menu_Click"/>
-                    <RadioButton x:Name="RecentRadio" GroupName="DefaultCategory" Content="Recently Used" Click="Menu_Click"/>
-                    <RadioButton x:Name="AllRadio" GroupName="DefaultCategory" Content="All Applications" Click="Menu_Click"/>
-                    <TextBlock Text="Menu" Style="{StaticResource GroupHeader}"/>
-                    <CheckBox x:Name="HoverBox" Content="Switch categories by hovering" Click="Menu_Click"/>
-                    <CheckBox x:Name="StayBox" Content="Stay visible when focus is lost" Click="Menu_Click"/>
-                    <CheckBox x:Name="SortBox" Content="Sort categories" Click="Menu_Click"/>
-                    <CheckBox x:Name="AltF1Box" Content="Open the menu with Alt+F1" Click="Menu_Click"/>
-                    <TextBlock Text="Recently Used" Style="{StaticResource GroupHeader}"/>
-                    <Grid Margin="0,4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Amount of items:" Style="{StaticResource FieldLabel}"/>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <TextBox x:Name="RecentCountBox" Width="72" LostFocus="Size_LostFocus"/>
-                            <Button Content="−" Width="32" Margin="6,0,0,0" Click="RecentDown"/>
-                            <Button Content="+" Width="32" Margin="4,0,0,0" Click="RecentUp"/>
-                        </StackPanel>
-                    </Grid>
-                    <CheckBox x:Name="IncludeFavBox" Content="Include favorites" Click="Menu_Click"/>
                 </StackPanel>
             </ScrollViewer>
         </Grid>

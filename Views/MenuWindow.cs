@@ -564,12 +564,14 @@ public sealed class MenuWindow : Window
         if (_categoryId == "recent")
         {
             var list = new List<AppEntry>();
+            var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             foreach (var key in stored.Recent)
             {
                 if (list.Count >= config.RecentCount) break;
-                if (!config.RecentIncludeFavorites && SettingsStore.Instance.IsFavorite(key)) continue;
-                var app = all.FirstOrDefault(a => a.Key.Equals(key, StringComparison.OrdinalIgnoreCase));
-                if (app != null) list.Add(app);
+                var app = AppCatalogService.Instance.Find(key) ?? AppCatalogService.Instance.FindByTarget(key);
+                if (app == null || !seen.Add(app.Key)) continue;
+                if (!config.RecentIncludeFavorites && SettingsStore.Instance.IsFavorite(app.Key)) continue;
+                list.Add(app);
             }
             return list;
         }

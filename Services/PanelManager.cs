@@ -69,13 +69,6 @@ public sealed class PanelManager
         _settings.Activate();
     }
 
-    public void ToggleMenuAtCursor()
-    {
-        Win32.GetCursorPos(out var pt);
-        var panel = _panels.FirstOrDefault(p => p.ContainsScreenPoint(pt)) ?? _panels.FirstOrDefault();
-        panel?.ToggleMenuFromHotkey();
-    }
-
     void OnConfig(ConfigArea area)
     {
         if (area == ConfigArea.PanelGeometry)
@@ -101,19 +94,14 @@ public sealed class PanelManager
                 panel.Close();
             }
 
-            bool needHotkey = _panels.TrueForAll(p => !p.OwnsHotkey);
             foreach (var device in wanted)
             {
                 if (_panels.Any(p => p.MonitorDevice.Equals(device, StringComparison.OrdinalIgnoreCase)))
                     continue;
-                var panel = new PanelWindow(device, needHotkey);
+                var panel = new PanelWindow(device);
                 _panels.Add(panel);
                 panel.Show();
-                needHotkey = false;
             }
-
-            if (_panels.Count > 0 && _panels.TrueForAll(p => !p.OwnsHotkey))
-                _panels[0].SetOwnsHotkey(true);
 
             if (_panels.Count > 0)
                 Application.Current.MainWindow = _panels[0];

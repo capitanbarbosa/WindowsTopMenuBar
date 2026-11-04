@@ -26,6 +26,53 @@ public sealed class AppCatalogService
             return _apps.FirstOrDefault(a => string.Equals(a.Key, key, StringComparison.OrdinalIgnoreCase));
     }
 
+    public AppEntry? FindByTarget(string? path, string? aumid = null)
+    {
+        var apps = Snapshot();
+        if (!string.IsNullOrWhiteSpace(aumid))
+        {
+            var byAumid = apps.FirstOrDefault(a =>
+                a.AppUserModelId.Equals(aumid, StringComparison.OrdinalIgnoreCase));
+            if (byAumid != null) return byAumid;
+        }
+        if (string.IsNullOrWhiteSpace(path)) return null;
+        var byKey = apps.FirstOrDefault(a => a.Key.Equals(path, StringComparison.OrdinalIgnoreCase));
+        if (byKey != null) return byKey;
+
+        string full = NormalizePath(path);
+        var matches = apps.Where(a => PathsEqual(a.TargetPath, full)).ToList();
+        if (matches.Count == 0)
+        {
+            string name = Path.GetFileName(full);
+            if (!string.IsNullOrWhiteSpace(name))
+                matches = apps.Where(a => Path.GetFileName(a.TargetPath).Equals(name, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+        if (matches.Count == 0) return null;
+        if (matches.Count == 1) return matches[0];
+        string stem = Path.GetFileNameWithoutExtension(full);
+        return matches.FirstOrDefault(a => a.Name.Equals(stem, StringComparison.OrdinalIgnoreCase))
+            ?? matches.OrderBy(a => a.Category == "Applications" ? 0 : 1).ThenBy(a => a.Name.Length).First();
+    }
+
+    static bool PathsEqual(string? left, string right)
+    {
+        if (string.IsNullOrWhiteSpace(left)) return false;
+        return NormalizePath(left).Equals(right, StringComparison.OrdinalIgnoreCase);
+    }
+
+    static string NormalizePath(string path)
+    {
+        try
+        {
+            path = Environment.ExpandEnvironmentVariables(path.Trim());
+            return Path.GetFullPath(path);
+        }
+        catch
+        {
+            return path.Trim();
+        }
+    }
+
     public Task LoadAsync()
     {
         var tcs = new TaskCompletionSource();

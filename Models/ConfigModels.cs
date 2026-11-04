@@ -233,7 +233,6 @@ public sealed class MenuConfig
     public int RecentCount { get; set; } = 10;
     public bool RecentIncludeFavorites { get; set; }
     public bool ConfirmSessionCommands { get; set; } = true;
-    public bool AltF1 { get; set; } = true;
 
     public bool SearchDescriptions { get; set; } = true;
     public bool SearchExecutables { get; set; } = true;

@@ -20,7 +20,7 @@ This is an independent project. It is not affiliated with Kali Linux or Offensiv
 
 | Item | Role |
 | --- | --- |
-| Applications menu | Opens the Whisker-style menu (`Alt+F1`) |
+| Applications menu | Opens the Whisker-style menu |
 | Launcher | Icon shortcut to a pinned app |
 | Workspace switcher | Virtual desktop chips |
 | Clock | Date and time |
@@ -62,13 +62,13 @@ Then run again.
 
 ## Use
 
-- **Left-click** the menu icon (or press `Alt+F1`) for applications
+- **Left-click** the menu icon for applications
 - **Right-click** the bar for Panel settings, lock/unlock, add element, crash log, and Quit
 - Unlock the panel to drag items and resize the bar from its inner edge
 - Drag an app out of the menu onto the bar to pin it
 - Workspace chips: click to switch, scroll to move, right-click to rename / add / remove
 
-Settings live under **Panel**, **Items**, Appearance, and Behavior.
+Settings live under **Panel**, **Items**, and Appearance.
 
 ## Files
 

@@ -20,7 +20,9 @@ public sealed class WindowTracker
 
     static readonly HashSet<string> SkipProcesses = new(StringComparer.OrdinalIgnoreCase)
     {
-        "ScreenClippingHost", "SnippingTool", "ScreenSketch", "PickerHost"
+        "ScreenClippingHost", "SnippingTool", "ScreenSketch", "PickerHost",
+        "ApplicationFrameHost", "RuntimeBroker", "SearchHost", "StartMenuExperienceHost",
+        "ShellExperienceHost", "TextInputHost", "LockApp", "dwm", "conhost"
     };
 
     readonly Dictionary<IntPtr, ImageSource> _icons = new();
@@ -28,10 +30,12 @@ public sealed class WindowTracker
     readonly WinEventDelegate _hookProc;
     readonly DispatcherTimer _timer;
     readonly DispatcherTimer _debounce;
+    readonly HashSet<string> _liveProcesses = new(StringComparer.OrdinalIgnoreCase);
     List<WindowInfo> _windows = [];
     bool _started;
 
     public event Action? Changed;
+    public event Action<string>? ProcessAppeared;
     public IReadOnlyList<WindowInfo> Windows => _windows;
 
     WindowTracker()
@@ -141,7 +145,35 @@ public sealed class WindowTracker
         _windows = ordered;
         foreach (var key in _icons.Keys.Where(k => !live.ContainsKey(k)).ToList())
             _icons.Remove(key);
+        NoteAppearedProcesses(ordered);
         Changed?.Invoke();
+    }
+
+    void NoteAppearedProcesses(List<WindowInfo> windows)
+    {
+        var now = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var window in windows)
+        {
+            if (!string.IsNullOrWhiteSpace(window.ProcessPath))
+                now.Add(window.ProcessPath);
+        }
+        var appeared = new List<string>();
+        foreach (var path in now)
+        {
+            if (_liveProcesses.Add(path))
+                appeared.Add(path);
+        }
+        _liveProcesses.RemoveWhere(path => !now.Contains(path));
+        if (appeared.Count == 0 || ProcessAppeared == null) return;
+        string foreground = windows.FirstOrDefault(w => w.IsForeground)?.ProcessPath ?? "";
+        foreach (var path in appeared)
+        {
+            if (!path.Equals(foreground, StringComparison.OrdinalIgnoreCase))
+                ProcessAppeared.Invoke(path);
+        }
+        if (!string.IsNullOrWhiteSpace(foreground) &&
+            appeared.Any(p => p.Equals(foreground, StringComparison.OrdinalIgnoreCase)))
+            ProcessAppeared.Invoke(foreground);
     }
 
     void Collect(IntPtr hwnd, uint self, IntPtr foreground, List<WindowInfo> found)

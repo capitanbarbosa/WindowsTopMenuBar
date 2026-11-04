@@ -30,10 +30,8 @@ public partial class PanelWindow : Window
     int _dragFrom = -1;
     string _buttonSig = "";
     MenuWindow? _menu;
-    bool _ownsHotkey;
 
     public string MonitorDevice { get; private set; } = "";
-    public bool OwnsHotkey => _ownsHotkey;
 
     public PanelWindow()
     {
@@ -77,26 +75,17 @@ public partial class PanelWindow : Window
         ApplyChrome();
     }
 
-    public PanelWindow(string monitorDevice, bool ownsHotkey) : this()
+    public PanelWindow(string monitorDevice) : this()
     {
         MonitorDevice = monitorDevice ?? "";
-        _ownsHotkey = ownsHotkey;
     }
 
     public void AllowClose() => _allowClose = true;
-
-    public void SetOwnsHotkey(bool on)
-    {
-        _ownsHotkey = on;
-        UpdateHotkey();
-    }
 
     public bool ContainsScreenPoint(POINT pt) =>
         _hasTarget &&
         pt.X >= _target.Left && pt.X < _target.Right &&
         pt.Y >= _target.Top && pt.Y < _target.Bottom;
-
-    public void ToggleMenuFromHotkey() => ToggleMenu(MenuAnchor());
 
     void Quit() => PanelManager.Instance.QuitAll();
 
@@ -113,7 +102,6 @@ public partial class PanelWindow : Window
             Win32.SWP_NOMOVE | Win32.SWP_NOSIZE | Win32.SWP_NOZORDER | Win32.SWP_NOACTIVATE | Win32.SWP_FRAMECHANGED);
         _appbar.Attach(_hwnd);
         ApplyGeometry();
-        UpdateHotkey();
         ApplyOpacity(false);
         if (SettingsStore.Instance.Config.Panel.AutoHideMode == "Always")
         {
@@ -131,7 +119,6 @@ public partial class PanelWindow : Window
             return;
         }
         WindowTracker.Instance.Changed -= OnWindows;
-        if (_hwnd != IntPtr.Zero) Win32.UnregisterHotKey(_hwnd, 1);
         _appbar.Unregister();
         _menu?.Close();
         base.OnClosing(e);
@@ -159,13 +146,6 @@ public partial class PanelWindow : Window
         {
             handled = true;
             return (IntPtr)Win32.MA_NOACTIVATE;
-        }
-
-        if (msg == Win32.WM_HOTKEY)
-        {
-            PanelManager.Instance.ToggleMenuAtCursor();
-            handled = true;
-            return IntPtr.Zero;
         }
 
         if (msg == Win32.WM_WINDOWPOSCHANGING && _hasTarget && !_fullscreen)
@@ -250,7 +230,6 @@ public partial class PanelWindow : Window
                 Rebuild();
                 break;
             case ConfigArea.Menu:
-                UpdateHotkey();
                 if (ButtonSig() != _buttonSig)
                     Rebuild();
                 _menu?.Reload();
@@ -621,14 +600,6 @@ public partial class PanelWindow : Window
     }
 
     public void OpenSettings(string tab) => PanelManager.Instance.OpenSettings(tab);
-
-    void UpdateHotkey()
-    {
-        if (_hwnd == IntPtr.Zero) return;
-        Win32.UnregisterHotKey(_hwnd, 1);
-        if (_ownsHotkey && SettingsStore.Instance.Config.Menu.AltF1)
-            Win32.RegisterHotKey(_hwnd, 1, Win32.MOD_ALT | Win32.MOD_NOREPEAT, 0x70);
-    }
 
     void SetFullscreen(bool on)
     {

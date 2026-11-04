@@ -54,6 +54,7 @@ public partial class App : Application
         _ = AppCatalogService.Instance.LoadAsync().ContinueWith(
             t => { if (t.IsFaulted) Log.Error("catalog task", t.Exception); },
             TaskScheduler.Default);
+        WindowTracker.Instance.ProcessAppeared += path => SettingsStore.Instance.RecordLaunch(path);
         WindowTracker.Instance.Start();
 
         SessionEnding += (_, _) => PanelManager.Instance.PrepareExit();

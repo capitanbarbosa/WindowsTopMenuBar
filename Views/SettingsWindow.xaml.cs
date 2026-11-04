@@ -26,18 +26,16 @@ public partial class SettingsWindow : Window
 
     public void SelectTab(string tab)
     {
-        if (tab is "general" or "commands" or "search")
+        if (tab is "general" or "commands" or "search" or "behavior")
             tab = "appearance";
         if (tab == "display")
             tab = "panel";
         PagePanel.Visibility = tab == "panel" ? Visibility.Visible : Visibility.Collapsed;
         PageItems.Visibility = tab == "items" ? Visibility.Visible : Visibility.Collapsed;
         PageAppearance.Visibility = tab == "appearance" ? Visibility.Visible : Visibility.Collapsed;
-        PageBehavior.Visibility = tab == "behavior" ? Visibility.Visible : Visibility.Collapsed;
         TabPanel.IsChecked = tab == "panel";
         TabItems.IsChecked = tab == "items";
         TabAppearance.IsChecked = tab == "appearance";
-        TabBehavior.IsChecked = tab == "behavior";
     }
 
     void Tab_Click(object sender, RoutedEventArgs e) => SelectTab((string)((FrameworkElement)sender).Tag);
@@ -100,16 +98,6 @@ public partial class SettingsWindow : Window
         TitleBox.Text = config.Menu.ButtonTitle;
         SingleRowBox.IsChecked = config.Menu.SinglePanelRow;
         ShowIcon();
-
-        FavRadio.IsChecked = config.Menu.DefaultCategory == "Favorites";
-        RecentRadio.IsChecked = config.Menu.DefaultCategory == "Recent";
-        AllRadio.IsChecked = config.Menu.DefaultCategory == "All";
-        HoverBox.IsChecked = config.Menu.HoverSwitch;
-        StayBox.IsChecked = config.Menu.StayVisibleOnFocusLoss;
-        SortBox.IsChecked = config.Menu.SortCategories;
-        AltF1Box.IsChecked = config.Menu.AltF1;
-        RecentCountBox.Text = config.Menu.RecentCount.ToString();
-        IncludeFavBox.IsChecked = config.Menu.RecentIncludeFavorites;
         _loading = false;
     }
 
@@ -286,13 +274,6 @@ public partial class SettingsWindow : Window
             c.Menu.ButtonDisplay = TagOf(DisplayBox);
             c.Menu.ButtonTitle = TitleBox.Text;
             c.Menu.SinglePanelRow = SingleRowBox.IsChecked == true;
-            c.Menu.DefaultCategory = RecentRadio.IsChecked == true ? "Recent" : AllRadio.IsChecked == true ? "All" : "Favorites";
-            c.Menu.HoverSwitch = HoverBox.IsChecked == true;
-            c.Menu.StayVisibleOnFocusLoss = StayBox.IsChecked == true;
-            c.Menu.SortCategories = SortBox.IsChecked == true;
-            c.Menu.AltF1 = AltF1Box.IsChecked == true;
-            c.Menu.RecentCount = ReadInt(RecentCountBox.Text, c.Menu.RecentCount, 1, 30);
-            c.Menu.RecentIncludeFavorites = IncludeFavBox.IsChecked == true;
         }, ConfigArea.Menu);
     }
 
@@ -459,22 +440,6 @@ public partial class SettingsWindow : Window
 
     void Menu_Click(object sender, RoutedEventArgs e) => SaveMenu();
     void Menu_Changed(object sender, SelectionChangedEventArgs e) => SaveMenu();
-
-    void Size_LostFocus(object sender, RoutedEventArgs e)
-    {
-        RecentCountBox.Text = ReadInt(RecentCountBox.Text, 10, 1, 30).ToString();
-        SaveMenu();
-    }
-
-    void RecentDown(object sender, RoutedEventArgs e) => Step(RecentCountBox, -1, 1, 30);
-    void RecentUp(object sender, RoutedEventArgs e) => Step(RecentCountBox, 1, 1, 30);
-
-    void Step(TextBox box, int delta, int min, int max)
-    {
-        int value = Math.Clamp(ReadInt(box.Text, min, min, max) + delta, min, max);
-        box.Text = value.ToString();
-        SaveMenu();
-    }
 
     void ShowIcon()
     {

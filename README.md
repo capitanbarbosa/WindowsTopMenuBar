@@ -32,12 +32,18 @@ This is an independent project. It is not affiliated with Kali Linux or Offensiv
 
 Default layout: menu, Terminal, Files, browser, workspace switcher, expanding separator, clock, settings.
 
-## Requirements
+## Download
+
+64-bit Windows 10 or 11. No .NET SDK needed.
+
+The latest build is on **[Releases](https://github.com/capitanbarbosa/WindowsWhisker/releases/latest)**. Download `WindowsWhisker-1.0.0-win-x64.zip`, unzip, and run `WindowsWhisker.exe`.
+
+Windows SmartScreen may warn on the first run because the exe is not code-signed. Choose **More info**, then **Run anyway**.
+
+## Build from source
 
 - Windows 10 or 11, 64-bit
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
-
-## Run
 
 From the repo root:
 

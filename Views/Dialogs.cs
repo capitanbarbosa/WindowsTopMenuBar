@@ -287,7 +287,7 @@ public static class Dialogs
                    "Panel settings has the Kali panel pages: display, appearance, and items. Lock the panel there, set the row size, length, opacity, and color, and reorder the items. While the panel is unlocked you can also drag elements and drag the inner edge to change the row size.\n\n" +
                    "On the Items page, the panel contents are a vertical list. Drag a row, or use the arrows, to reorder it. Add opens Add New Items, where you can search for a separator, a clipboard shortcut, a launcher, and the other panel pieces.\n\n" +
                    "Add launchers from the panel menu, from Panel settings, or by right-clicking an application and choosing Pin to panel. You can also drag an application out of the menu onto the bar.\n\n" +
-                   "Alt+F1 opens the application menu. The menu follows the Whisker options: icons, list, or tree, favorites, recently used, and the session buttons along the bottom.\n\n" +
+                   "Alt+F1 opens the application menu. The menu shows favorites, recently used, and all applications, with Settings and Quit along the bottom.\n\n" +
                    "The desktop shifter is the row of numbered desktops. Click one to switch, scroll to move between them, and right-click to add, rename, or remove a desktop.\n\n" +
                    "Crashes and unexpected errors are written to %AppData%\\WindowsWhisker\\crash.txt. Everyday errors go in log.txt next to it. Right-click the bar and choose Open crash log to view the latest crash.\n\n" +
                    "Quit from the button in the application menu, or from the panel's right-click menu. That gives the reserved space back to Windows.",

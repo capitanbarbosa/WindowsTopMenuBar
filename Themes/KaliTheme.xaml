@@ -130,12 +130,6 @@
         </Setter>
     </Style>
 
-    <Style x:Key="ViewToggle" TargetType="ToggleButton" BasedOn="{StaticResource TabToggle}">
-        <Setter Property="Width" Value="124"/>
-        <Setter Property="Height" Value="64"/>
-        <Setter Property="Margin" Value="4,0"/>
-    </Style>
-
     <Style TargetType="CheckBox">
         <Setter Property="Foreground" Value="White"/>
         <Setter Property="FontSize" Value="13"/>

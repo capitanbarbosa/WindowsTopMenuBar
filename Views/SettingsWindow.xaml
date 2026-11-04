@@ -12,11 +12,8 @@
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="12,10,12,0">
             <ToggleButton x:Name="TabPanel" Content="Panel" Style="{StaticResource TabToggle}" Tag="panel" Click="Tab_Click"/>
-            <ToggleButton x:Name="TabGeneral" Content="General" Style="{StaticResource TabToggle}" Tag="general" Click="Tab_Click"/>
             <ToggleButton x:Name="TabAppearance" Content="Appearance" Style="{StaticResource TabToggle}" Tag="appearance" Click="Tab_Click"/>
             <ToggleButton x:Name="TabBehavior" Content="Behavior" Style="{StaticResource TabToggle}" Tag="behavior" Click="Tab_Click"/>
-            <ToggleButton x:Name="TabCommands" Content="Commands" Style="{StaticResource TabToggle}" Tag="commands" Click="Tab_Click"/>
-            <ToggleButton x:Name="TabSearch" Content="Search Actions" Style="{StaticResource TabToggle}" Tag="search" Click="Tab_Click"/>
         </StackPanel>
 
         <Border DockPanel.Dock="Bottom" BorderBrush="#3E4252" BorderThickness="0,1,0,0" Padding="12,10">
@@ -194,85 +191,6 @@
                 </StackPanel>
             </ScrollViewer>
 
-            <ScrollViewer x:Name="PageGeneral" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
-                <StackPanel Margin="18,8,18,12">
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,16">
-                        <ToggleButton x:Name="ViewIcons" Style="{StaticResource ViewToggle}" Click="View_Click">
-                            <StackPanel>
-                                <TextBlock Text="&#xE8A9;" FontFamily="Segoe MDL2 Assets" FontSize="16" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Show as icons" HorizontalAlignment="Center" Margin="0,4,0,0" FontSize="11"/>
-                            </StackPanel>
-                        </ToggleButton>
-                        <ToggleButton x:Name="ViewList" Style="{StaticResource ViewToggle}" Click="View_Click">
-                            <StackPanel>
-                                <TextBlock Text="&#xEA37;" FontFamily="Segoe MDL2 Assets" FontSize="16" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Show as list" HorizontalAlignment="Center" Margin="0,4,0,0" FontSize="11"/>
-                            </StackPanel>
-                        </ToggleButton>
-                        <ToggleButton x:Name="ViewTree" Style="{StaticResource ViewToggle}" Click="View_Click">
-                            <StackPanel>
-                                <TextBlock Text="&#xE8B7;" FontFamily="Segoe MDL2 Assets" FontSize="16" HorizontalAlignment="Center"/>
-                                <TextBlock Text="Show as tree" HorizontalAlignment="Center" Margin="0,4,0,0" FontSize="11"/>
-                            </StackPanel>
-                        </ToggleButton>
-                    </StackPanel>
-                    <CheckBox x:Name="GenericBox" Content="Show generic application names" Click="Menu_Click"/>
-                    <CheckBox x:Name="CategoryNamesBox" Content="Show category names" Click="Menu_Click"/>
-                    <CheckBox x:Name="TooltipsBox" Content="Show application tooltips" Click="Menu_Click"/>
-                    <CheckBox x:Name="DescriptionsBox" Content="Show application descriptions" Click="Menu_Click"/>
-                    <Grid Margin="0,10,0,4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Application icon size:" Style="{StaticResource FieldLabel}"/>
-                        <ComboBox x:Name="AppIconBox" Grid.Column="1" Width="160" HorizontalAlignment="Left" SelectionChanged="Menu_Changed"/>
-                    </Grid>
-                    <Grid Margin="0,4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Category icon size:" Style="{StaticResource FieldLabel}"/>
-                        <ComboBox x:Name="CategoryIconBox" Grid.Column="1" Width="160" HorizontalAlignment="Left" SelectionChanged="Menu_Changed"/>
-                    </Grid>
-                    <Grid Margin="0,8,0,4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Menu width:" Style="{StaticResource FieldLabel}"/>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <TextBox x:Name="MenuWidthBox" Width="72" LostFocus="Size_LostFocus"/>
-                            <Button Content="−" Width="32" Margin="6,0,0,0" Click="WidthDown"/>
-                            <Button Content="+" Width="32" Margin="4,0,0,0" Click="WidthUp"/>
-                        </StackPanel>
-                    </Grid>
-                    <Grid Margin="0,4">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Menu height:" Style="{StaticResource FieldLabel}"/>
-                        <StackPanel Grid.Column="1" Orientation="Horizontal">
-                            <TextBox x:Name="MenuHeightBox" Width="72" LostFocus="Size_LostFocus"/>
-                            <Button Content="−" Width="32" Margin="6,0,0,0" Click="HeightDown"/>
-                            <Button Content="+" Width="32" Margin="4,0,0,0" Click="HeightUp"/>
-                        </StackPanel>
-                    </Grid>
-                    <Grid Margin="0,12,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="180"/>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="48"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Background opacity:" Style="{StaticResource FieldLabel}"/>
-                        <Slider x:Name="OpacitySlider" Grid.Column="1" Minimum="0" Maximum="100" TickFrequency="1" IsSnapToTickEnabled="True" ValueChanged="Opacity_Changed"/>
-                        <TextBlock x:Name="OpacityValue" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                    </Grid>
-                </StackPanel>
-            </ScrollViewer>
-
             <ScrollViewer x:Name="PageAppearance" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
                 <StackPanel Margin="18,8,18,12">
                     <TextBlock Text="Panel Button" Style="{StaticResource GroupHeader}"/>
@@ -433,47 +351,6 @@
                         </StackPanel>
                     </Grid>
                     <CheckBox x:Name="IncludeFavBox" Content="Include favorites" Click="Menu_Click"/>
-                    <TextBlock Text="Session Commands" Style="{StaticResource GroupHeader}"/>
-                    <CheckBox x:Name="ConfirmBox" Content="Show confirmation dialog" Click="Menu_Click"/>
-                </StackPanel>
-            </ScrollViewer>
-
-            <ScrollViewer x:Name="PageCommands" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
-                <StackPanel Margin="18,8,18,12">
-                    <TextBlock Text="Session commands" Style="{StaticResource GroupHeader}"/>
-                    <TextBlock Style="{StaticResource Hint}" Text="These are the buttons along the bottom of the menu, or beside the search box. Settings and Quit are always available. A custom command runs a program."/>
-                    <ListBox x:Name="CommandList" Height="160" SelectionChanged="Command_Selected"/>
-                    <Grid Margin="0,10,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Name:" Style="{StaticResource FieldLabel}"/>
-                        <TextBox x:Name="CmdNameBox" Grid.Column="1" LostFocus="Command_Edited"/>
-                    </Grid>
-                    <Grid Margin="0,8,0,0">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="120"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock Text="Command:" Style="{StaticResource FieldLabel}"/>
-                        <TextBox x:Name="CmdLineBox" Grid.Column="1" LostFocus="Command_Edited"/>
-                    </Grid>
-                    <CheckBox x:Name="CmdVisibleBox" Content="Visible in the menu" Click="Command_Edited"/>
-                    <CheckBox x:Name="CmdConfirmBox" Content="Ask for confirmation" Click="Command_Edited"/>
-                    <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-                        <Button Content="Add custom command" Click="CommandAdd_Click" Margin="0,0,8,0"/>
-                        <Button Content="Remove" Click="CommandRemove_Click"/>
-                    </StackPanel>
-                </StackPanel>
-            </ScrollViewer>
-
-            <ScrollViewer x:Name="PageSearch" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
-                <StackPanel Margin="18,8,18,12">
-                    <TextBlock Text="Search" Style="{StaticResource GroupHeader}"/>
-                    <TextBlock Style="{StaticResource Hint}" Text="Typing in the menu matches application names. Each word has to appear somewhere in the match. These options also search the description and the program path."/>
-                    <CheckBox x:Name="SearchDescBox" Content="Search descriptions" Click="Menu_Click"/>
-                    <CheckBox x:Name="SearchExeBox" Content="Search executable paths" Click="Menu_Click"/>
                 </StackPanel>
             </ScrollViewer>
         </Grid>

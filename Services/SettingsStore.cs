@@ -248,10 +248,10 @@ public sealed class SettingsStore
         config.Favorites ??= [];
         config.Recent ??= [];
         config.Panel.Items ??= PanelItem.CreateDefault();
-        config.Menu.Commands ??= CommandItem.CreateDefault();
-        config.Menu.Commands.RemoveAll(c => CommandItem.RetiredKinds.Contains(c.Kind));
-        if (config.Menu.Commands.All(c => c.Kind != "settings"))
-            config.Menu.Commands.Insert(0, new CommandItem { Id = "settings", Name = "Settings", Kind = "settings", Confirm = false, Visible = true });
+        config.Menu.Commands = CommandItem.CreateDefault();
+        config.Menu.ConfirmSessionCommands = true;
+        config.Menu.SearchDescriptions = true;
+        config.Menu.SearchExecutables = true;
         config.Profiles ??= [];
         config.Panel.Height = Math.Clamp(config.Panel.Height, 16, 128);
         config.Panel.Rows = Math.Clamp(config.Panel.Rows, 1, 6);
@@ -268,9 +268,16 @@ public sealed class SettingsStore
             config.Panel.Edge = "Top";
         if (config.Panel.Mode is "Vertical" or "Deskbar" && config.Panel.Edge is "Top" or "Bottom")
             config.Panel.Edge = "Left";
-        config.Menu.MenuWidth = Math.Clamp(config.Menu.MenuWidth, 360, 1600);
-        config.Menu.MenuHeight = Math.Clamp(config.Menu.MenuHeight, 320, 1400);
-        config.Menu.BackgroundOpacity = Math.Clamp(config.Menu.BackgroundOpacity, 0, 100);
+        config.Menu.ViewMode = "List";
+        config.Menu.ShowGenericNames = false;
+        config.Menu.ShowCategoryNames = true;
+        config.Menu.ShowTooltips = true;
+        config.Menu.ShowDescriptions = false;
+        config.Menu.AppIconSize = "Small";
+        config.Menu.CategoryIconSize = "Smaller";
+        config.Menu.MenuWidth = 570;
+        config.Menu.MenuHeight = 700;
+        config.Menu.BackgroundOpacity = 100;
         config.Menu.RecentCount = Math.Clamp(config.Menu.RecentCount, 1, 30);
         foreach (var item in config.Panel.Items)
         {

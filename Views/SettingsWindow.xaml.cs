@@ -17,8 +17,6 @@ public partial class SettingsWindow : Window
     {
         InitializeComponent();
         Ui.DarkTitle(this);
-        FillIconSizes(AppIconBox);
-        FillIconSizes(CategoryIconBox);
         FillMonitors();
         LoadUi();
         ShowPanelSub("display");
@@ -29,18 +27,14 @@ public partial class SettingsWindow : Window
 
     public void SelectTab(string tab)
     {
+        if (tab is "general" or "commands" or "search")
+            tab = "appearance";
         PagePanel.Visibility = tab == "panel" ? Visibility.Visible : Visibility.Collapsed;
-        PageGeneral.Visibility = tab == "general" ? Visibility.Visible : Visibility.Collapsed;
         PageAppearance.Visibility = tab == "appearance" ? Visibility.Visible : Visibility.Collapsed;
         PageBehavior.Visibility = tab == "behavior" ? Visibility.Visible : Visibility.Collapsed;
-        PageCommands.Visibility = tab == "commands" ? Visibility.Visible : Visibility.Collapsed;
-        PageSearch.Visibility = tab == "search" ? Visibility.Visible : Visibility.Collapsed;
         TabPanel.IsChecked = tab == "panel";
-        TabGeneral.IsChecked = tab == "general";
         TabAppearance.IsChecked = tab == "appearance";
         TabBehavior.IsChecked = tab == "behavior";
-        TabCommands.IsChecked = tab == "commands";
-        TabSearch.IsChecked = tab == "search";
     }
 
     void Tab_Click(object sender, RoutedEventArgs e) => SelectTab((string)((FrameworkElement)sender).Tag);
@@ -93,20 +87,6 @@ public partial class SettingsWindow : Window
         LeaveOpacityValue.Text = config.Panel.OpacityLeave.ToString();
         RefreshElements();
 
-        ViewIcons.IsChecked = config.Menu.ViewMode == "Icons";
-        ViewList.IsChecked = config.Menu.ViewMode is "List" or "";
-        ViewTree.IsChecked = config.Menu.ViewMode == "Tree";
-        GenericBox.IsChecked = config.Menu.ShowGenericNames;
-        CategoryNamesBox.IsChecked = config.Menu.ShowCategoryNames;
-        TooltipsBox.IsChecked = config.Menu.ShowTooltips;
-        DescriptionsBox.IsChecked = config.Menu.ShowDescriptions;
-        SelectTag(AppIconBox, config.Menu.AppIconSize);
-        SelectTag(CategoryIconBox, config.Menu.CategoryIconSize);
-        MenuWidthBox.Text = config.Menu.MenuWidth.ToString();
-        MenuHeightBox.Text = config.Menu.MenuHeight.ToString();
-        OpacitySlider.Value = config.Menu.BackgroundOpacity;
-        OpacityValue.Text = config.Menu.BackgroundOpacity.ToString();
-
         HorizontalBox.IsChecked = config.Menu.CategoriesHorizontal;
         CategoriesLeftBox.IsChecked = config.Menu.CategoriesOnLeft;
         ProfileBottomBox.IsChecked = config.Menu.ProfileOnBottom;
@@ -127,10 +107,6 @@ public partial class SettingsWindow : Window
         AltF1Box.IsChecked = config.Menu.AltF1;
         RecentCountBox.Text = config.Menu.RecentCount.ToString();
         IncludeFavBox.IsChecked = config.Menu.RecentIncludeFavorites;
-        ConfirmBox.IsChecked = config.Menu.ConfirmSessionCommands;
-        SearchDescBox.IsChecked = config.Menu.SearchDescriptions;
-        SearchExeBox.IsChecked = config.Menu.SearchExecutables;
-        RefreshCommands();
         _loading = false;
     }
 
@@ -142,12 +118,6 @@ public partial class SettingsWindow : Window
             string label = (mon.Primary ? "Primary  " : "Display  ") + mon.Device;
             MonitorBox.Items.Add(new ComboBoxItem { Content = label, Tag = mon.Device });
         }
-    }
-
-    static void FillIconSizes(ComboBox box)
-    {
-        foreach (var size in new[] { "Smaller", "Small", "Medium", "Large", "Larger" })
-            box.Items.Add(new ComboBoxItem { Content = size, Tag = size });
     }
 
     void RefreshElements()
@@ -168,23 +138,6 @@ public partial class SettingsWindow : Window
         _keepElementId = null;
         _loading = loading;
         UpdateEditButton();
-    }
-
-    void RefreshCommands()
-    {
-        bool loading = _loading;
-        _loading = true;
-        var selected = CommandList.SelectedItem as CommandItem;
-        CommandList.Items.Clear();
-        foreach (var cmd in SettingsStore.Instance.Config.Menu.Commands)
-            CommandList.Items.Add(cmd);
-        CommandList.DisplayMemberPath = "Name";
-        if (selected != null)
-            CommandList.SelectedItem = SettingsStore.Instance.Config.Menu.Commands.FirstOrDefault(c => c.Id == selected.Id);
-        if (CommandList.SelectedIndex < 0 && CommandList.Items.Count > 0)
-            CommandList.SelectedIndex = 0;
-        _loading = loading;
-        LoadCommandEditor();
     }
 
     void ShowPanelSub(string page)
@@ -331,16 +284,6 @@ public partial class SettingsWindow : Window
         if (_loading) return;
         SettingsStore.Instance.Update(c =>
         {
-            c.Menu.ViewMode = ViewTree.IsChecked == true ? "Tree" : ViewIcons.IsChecked == true ? "Icons" : "List";
-            c.Menu.ShowGenericNames = GenericBox.IsChecked == true;
-            c.Menu.ShowCategoryNames = CategoryNamesBox.IsChecked == true;
-            c.Menu.ShowTooltips = TooltipsBox.IsChecked == true;
-            c.Menu.ShowDescriptions = DescriptionsBox.IsChecked == true;
-            c.Menu.AppIconSize = TagOf(AppIconBox);
-            c.Menu.CategoryIconSize = TagOf(CategoryIconBox);
-            c.Menu.MenuWidth = ReadInt(MenuWidthBox.Text, c.Menu.MenuWidth, 360, 1600);
-            c.Menu.MenuHeight = ReadInt(MenuHeightBox.Text, c.Menu.MenuHeight, 320, 1400);
-            c.Menu.BackgroundOpacity = (int)OpacitySlider.Value;
             c.Menu.CategoriesHorizontal = HorizontalBox.IsChecked == true;
             c.Menu.CategoriesOnLeft = CategoriesLeftBox.IsChecked == true;
             c.Menu.ProfileOnBottom = ProfileBottomBox.IsChecked == true;
@@ -357,9 +300,6 @@ public partial class SettingsWindow : Window
             c.Menu.AltF1 = AltF1Box.IsChecked == true;
             c.Menu.RecentCount = ReadInt(RecentCountBox.Text, c.Menu.RecentCount, 1, 30);
             c.Menu.RecentIncludeFavorites = IncludeFavBox.IsChecked == true;
-            c.Menu.ConfirmSessionCommands = ConfirmBox.IsChecked == true;
-            c.Menu.SearchDescriptions = SearchDescBox.IsChecked == true;
-            c.Menu.SearchExecutables = SearchExeBox.IsChecked == true;
         }, ConfigArea.Menu);
     }
 
@@ -527,36 +467,12 @@ public partial class SettingsWindow : Window
     void Menu_Click(object sender, RoutedEventArgs e) => SaveMenu();
     void Menu_Changed(object sender, SelectionChangedEventArgs e) => SaveMenu();
 
-    void Opacity_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
-    {
-        if (!IsLoaded || _loading) return;
-        OpacityValue.Text = ((int)OpacitySlider.Value).ToString();
-        SaveMenu();
-    }
-
-    void View_Click(object sender, RoutedEventArgs e)
-    {
-        if (_loading) return;
-        _loading = true;
-        ViewIcons.IsChecked = sender == ViewIcons;
-        ViewList.IsChecked = sender == ViewList;
-        ViewTree.IsChecked = sender == ViewTree;
-        _loading = false;
-        SaveMenu();
-    }
-
     void Size_LostFocus(object sender, RoutedEventArgs e)
     {
-        MenuWidthBox.Text = ReadInt(MenuWidthBox.Text, 570, 360, 1600).ToString();
-        MenuHeightBox.Text = ReadInt(MenuHeightBox.Text, 700, 320, 1400).ToString();
         RecentCountBox.Text = ReadInt(RecentCountBox.Text, 10, 1, 30).ToString();
         SaveMenu();
     }
 
-    void WidthDown(object sender, RoutedEventArgs e) => Step(MenuWidthBox, -10, 360, 1600);
-    void WidthUp(object sender, RoutedEventArgs e) => Step(MenuWidthBox, 10, 360, 1600);
-    void HeightDown(object sender, RoutedEventArgs e) => Step(MenuHeightBox, -10, 320, 1400);
-    void HeightUp(object sender, RoutedEventArgs e) => Step(MenuHeightBox, 10, 320, 1400);
     void RecentDown(object sender, RoutedEventArgs e) => Step(RecentCountBox, -1, 1, 30);
     void RecentUp(object sender, RoutedEventArgs e) => Step(RecentCountBox, 1, 1, 30);
 
@@ -730,60 +646,6 @@ public partial class SettingsWindow : Window
         _keepElementId = item.Id;
         (items[index], items[next]) = (items[next], items[index]);
         SettingsStore.Instance.Update(_ => { }, ConfigArea.PanelItems);
-    }
-
-    void Command_Selected(object sender, SelectionChangedEventArgs e) => LoadCommandEditor();
-
-    void LoadCommandEditor()
-    {
-        _loading = true;
-        if (CommandList.SelectedItem is not CommandItem cmd)
-        {
-            CmdNameBox.Text = "";
-            CmdLineBox.Text = "";
-            CmdVisibleBox.IsChecked = false;
-            CmdConfirmBox.IsChecked = false;
-            CmdLineBox.IsEnabled = false;
-            _loading = false;
-            return;
-        }
-        CmdNameBox.Text = cmd.Name;
-        CmdLineBox.Text = cmd.CommandLine;
-        CmdVisibleBox.IsChecked = cmd.Visible;
-        CmdConfirmBox.IsChecked = cmd.Confirm;
-        CmdLineBox.IsEnabled = cmd.Kind == "command";
-        _loading = false;
-    }
-
-    void Command_Edited(object sender, RoutedEventArgs e)
-    {
-        if (_loading) return;
-        if (CommandList.SelectedItem is not CommandItem cmd) return;
-        cmd.Name = CmdNameBox.Text;
-        cmd.CommandLine = CmdLineBox.Text;
-        cmd.Visible = CmdVisibleBox.IsChecked == true;
-        cmd.Confirm = CmdConfirmBox.IsChecked == true;
-        int index = CommandList.SelectedIndex;
-        SettingsStore.Instance.Update(_ => { }, ConfigArea.Menu);
-        _loading = true;
-        CommandList.Items.Refresh();
-        CommandList.SelectedIndex = index;
-        _loading = false;
-    }
-
-    void CommandAdd_Click(object sender, RoutedEventArgs e)
-    {
-        var cmd = new CommandItem { Name = "Custom command", Kind = "command", CommandLine = "", Confirm = true, Visible = true };
-        SettingsStore.Instance.Update(c => c.Menu.Commands.Add(cmd), ConfigArea.Menu);
-        RefreshCommands();
-        CommandList.SelectedItem = cmd;
-    }
-
-    void CommandRemove_Click(object sender, RoutedEventArgs e)
-    {
-        if (CommandList.SelectedItem is not CommandItem cmd) return;
-        SettingsStore.Instance.Update(c => c.Menu.Commands.RemoveAll(i => i.Id == cmd.Id), ConfigArea.Menu);
-        RefreshCommands();
     }
 
     void Reset_Click(object sender, RoutedEventArgs e)

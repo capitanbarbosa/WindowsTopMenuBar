@@ -599,7 +599,7 @@ public partial class PanelWindow : Window
         }
         _expanded = true;
         ApplyGeometry();
-        _menu = new MenuWindow(() => OpenSettings("general"), Quit);
+        _menu = new MenuWindow(() => OpenSettings("appearance"), Quit);
         _menu.Closed += (_, _) =>
         {
             _menu = null;
@@ -784,7 +784,7 @@ public partial class PanelWindow : Window
     {
         var menu = new ContextMenu();
         menu.Items.Add(Item("Panel settings", () => OpenSettings("panel")));
-        menu.Items.Add(Item("Menu settings", () => OpenSettings("general")));
+        menu.Items.Add(Item("Menu settings", () => OpenSettings("appearance")));
         menu.Items.Add(Item(SettingsStore.Instance.Config.Panel.Locked ? "Unlock panel" : "Lock panel", ToggleLock));
         menu.Items.Add(new Separator());
         var add = new MenuItem { Header = "Add element" };

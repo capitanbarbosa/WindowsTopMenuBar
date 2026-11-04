@@ -1,4 +1,3 @@
-using System.Runtime.InteropServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -10,11 +9,21 @@ namespace WindowsWhisker.Controls;
 
 public static class ContextMenus
 {
+    const int VkLButton = 0x01;
+    const int VkRButton = 0x02;
+    const int VkMButton = 0x04;
+
     static ContextMenu? _open;
-    static IntPtr _hook;
     static IntPtr _popupHwnd;
-    static readonly HookProc Proc = OnMouse;
-    static bool _ignoreNextRightUp;
+    static bool _armed;
+    static readonly DispatcherTimer Poll = CreatePoll();
+
+    static DispatcherTimer CreatePoll()
+    {
+        var timer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(40) };
+        timer.Tick += (_, _) => PollClickAway();
+        return timer;
+    }
 
     public static void Show(ContextMenu menu, FrameworkElement? target = null)
     {
@@ -36,17 +45,14 @@ public static class ContextMenus
 
     static void OnOpened(object sender, RoutedEventArgs e)
     {
-        _ignoreNextRightUp = Mouse.RightButton == MouseButtonState.Pressed;
+        _armed = false;
         if (sender is ContextMenu menu)
         {
             var source = PresentationSource.FromVisual(menu) as HwndSource;
             _popupHwnd = source?.Handle ?? IntPtr.Zero;
         }
-        if (_hook != IntPtr.Zero) return;
-        IntPtr module = Win32.GetModuleHandle(null);
-        _hook = Win32.SetWindowsHookEx(Win32.WH_MOUSE_LL, Proc, module, 0);
-        if (_hook == IntPtr.Zero)
-            _hook = Win32.SetWindowsHookEx(Win32.WH_MOUSE_LL, Proc, IntPtr.Zero, 0);
+        Poll.Stop();
+        Poll.Start();
     }
 
     static void OnClosed(object sender, RoutedEventArgs e)
@@ -60,7 +66,8 @@ public static class ContextMenus
         if (_open == sender)
             _open = null;
         _popupHwnd = IntPtr.Zero;
-        DropHook();
+        _armed = false;
+        Poll.Stop();
     }
 
     static void OnKey(object sender, KeyEventArgs e)
@@ -71,62 +78,44 @@ public static class ContextMenus
         e.Handled = true;
     }
 
-    static void DropHook()
+    static void PollClickAway()
     {
-        if (_hook == IntPtr.Zero) return;
-        Win32.UnhookWindowsHookEx(_hook);
-        _hook = IntPtr.Zero;
+        if (_open == null)
+        {
+            Poll.Stop();
+            return;
+        }
+
+        bool down = Down(VkLButton) || Down(VkRButton) || Down(VkMButton);
+        if (!down)
+        {
+            _armed = true;
+            return;
+        }
+        if (!_armed) return;
+        if (!Win32.GetCursorPos(out var pt)) return;
+        if (HitsPopup(pt)) return;
+        _open.IsOpen = false;
     }
 
-    static IntPtr OnMouse(int nCode, IntPtr wParam, IntPtr lParam)
-    {
-        IntPtr hook = _hook;
-        try
-        {
-            if (nCode >= 0 && _open != null)
-            {
-                int msg = wParam.ToInt32();
-                if (_ignoreNextRightUp && msg == Win32.WM_RBUTTONUP)
-                    _ignoreNextRightUp = false;
-                else if (msg is Win32.WM_LBUTTONDOWN or Win32.WM_RBUTTONDOWN or Win32.WM_MBUTTONDOWN or Win32.WM_NCLBUTTONDOWN)
-                {
-                    var info = Marshal.PtrToStructure<MSLLHOOKSTRUCT>(lParam);
-                    if (!HitsPopup(info.pt))
-                        DismissLater();
-                }
-            }
-        }
-        catch
-        {
-            // A throw inside a low-level hook takes the process down.
-        }
-        return Win32.CallNextHookEx(hook, nCode, wParam, lParam);
-    }
+    static bool Down(int vk) => (Win32.GetAsyncKeyState(vk) & 0x8000) != 0;
 
     static bool HitsPopup(POINT pt)
     {
         if (_popupHwnd == IntPtr.Zero) return false;
         IntPtr hwnd = Win32.WindowFromPoint(pt);
-        while (hwnd != IntPtr.Zero)
+        if (hwnd == _popupHwnd) return true;
+        IntPtr root = Win32.GetAncestor(hwnd, Win32.GA_ROOT);
+        if (root == _popupHwnd) return true;
+
+        IntPtr walk = root != IntPtr.Zero ? root : hwnd;
+        for (int i = 0; i < 8 && walk != IntPtr.Zero; i++)
         {
-            if (hwnd == _popupHwnd) return true;
-            IntPtr owner = Win32.GetWindow(hwnd, Win32.GW_OWNER);
+            IntPtr owner = Win32.GetWindow(walk, Win32.GW_OWNER);
             if (owner == _popupHwnd) return true;
-            hwnd = Win32.GetParent(hwnd);
-            if (hwnd == IntPtr.Zero && owner != IntPtr.Zero)
-                hwnd = owner;
+            if (owner == IntPtr.Zero || owner == walk) break;
+            walk = owner;
         }
         return false;
-    }
-
-    static void DismissLater()
-    {
-        var menu = _open;
-        if (menu == null) return;
-        menu.Dispatcher.BeginInvoke(() =>
-        {
-            if (menu.IsOpen)
-                menu.IsOpen = false;
-        }, DispatcherPriority.Input);
     }
 }

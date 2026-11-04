@@ -77,22 +77,13 @@ public partial class SettingsWindow : Window
         LengthValue.Text = config.Panel.Length.ToString();
         LengthSlider.IsEnabled = !config.Panel.AutoLength;
         AutoLengthBox.IsChecked = config.Panel.AutoLength;
-        DarkBox.IsChecked = config.Panel.DarkMode;
         SelectTag(BackgroundStyleBox, config.Panel.BackgroundStyle);
         PaintSwatch(config.Panel.Background);
+        PaintTextSwatch(config.Panel.Text);
         SelectColor(AccentBox, config.Panel.Accent);
         AutoIconBox.IsChecked = config.Panel.AutoIconSize;
-        EnterOpacitySlider.Value = config.Panel.OpacityEnter;
-        LeaveOpacitySlider.Value = config.Panel.OpacityLeave;
-        EnterOpacityValue.Text = config.Panel.OpacityEnter.ToString();
-        LeaveOpacityValue.Text = config.Panel.OpacityLeave.ToString();
         RefreshElements();
 
-        HorizontalBox.IsChecked = config.Menu.CategoriesHorizontal;
-        CategoriesLeftBox.IsChecked = config.Menu.CategoriesOnLeft;
-        ProfileBottomBox.IsChecked = config.Menu.ProfileOnBottom;
-        SearchBottomBox.IsChecked = config.Menu.SearchOnBottom;
-        CommandsSearchBox.IsChecked = config.Menu.CommandsNextToSearch;
         SelectTag(ProfileBox, config.Menu.ProfileStyle);
         SelectTag(DisplayBox, config.Menu.ButtonDisplay);
         TitleBox.Text = config.Menu.ButtonTitle;
@@ -172,21 +163,24 @@ public partial class SettingsWindow : Window
         if (_loading) return;
         SettingsStore.Instance.Update(c =>
         {
-            c.Panel.DarkMode = DarkBox.IsChecked == true;
             c.Panel.BackgroundStyle = string.IsNullOrWhiteSpace(TagOf(BackgroundStyleBox)) ? c.Panel.BackgroundStyle : TagOf(BackgroundStyleBox);
             c.Panel.Accent = string.IsNullOrWhiteSpace(TagOf(AccentBox)) ? c.Panel.Accent : TagOf(AccentBox);
             c.Panel.AutoIconSize = AutoIconBox.IsChecked == true;
-            c.Panel.OpacityEnter = (int)EnterOpacitySlider.Value;
-            c.Panel.OpacityLeave = (int)LeaveOpacitySlider.Value;
         }, ConfigArea.PanelChrome);
     }
 
     void PaintSwatch(string hex)
     {
         hex = NormalizeHex(hex) ?? PanelConfig.DefaultBackground;
-        var brush = Ui.Brush(hex, PanelConfig.DefaultBackground);
-        ColorSwatch.Background = brush;
+        ColorSwatch.Background = Ui.Brush(hex, PanelConfig.DefaultBackground);
         SetHexText(HexBox, hex);
+    }
+
+    void PaintTextSwatch(string hex)
+    {
+        hex = NormalizeHex(hex) ?? PanelConfig.DefaultText;
+        TextSwatch.Background = Ui.Brush(hex, PanelConfig.DefaultText);
+        SetHexText(TextHexBox, hex);
     }
 
     static void SetHexText(TextBox box, string hex)
@@ -220,15 +214,35 @@ public partial class SettingsWindow : Window
     void ApplyHex(TextBox source, bool revertIfInvalid)
     {
         if (_loading) return;
+        bool text = source == TextHexBox || (source.Tag as string) == "Text";
         string? hex = NormalizeHex(source.Text);
         if (hex == null)
         {
             if (revertIfInvalid)
-                PaintSwatch(SettingsStore.Instance.Config.Panel.Background);
+            {
+                if (text) PaintTextSwatch(SettingsStore.Instance.Config.Panel.Text);
+                else PaintSwatch(SettingsStore.Instance.Config.Panel.Background);
+            }
             return;
         }
 
         var panel = SettingsStore.Instance.Config.Panel;
+        if (text)
+        {
+            if (string.Equals(panel.Text, hex, StringComparison.OrdinalIgnoreCase))
+            {
+                _loading = true;
+                PaintTextSwatch(hex);
+                _loading = false;
+                return;
+            }
+            _loading = true;
+            PaintTextSwatch(hex);
+            _loading = false;
+            SettingsStore.Instance.Update(c => c.Panel.Text = hex, ConfigArea.PanelChrome);
+            return;
+        }
+
         if (string.Equals(panel.Background, hex, StringComparison.OrdinalIgnoreCase) && panel.BackgroundStyle == "Solid")
         {
             _loading = true;
@@ -265,11 +279,6 @@ public partial class SettingsWindow : Window
         if (_loading) return;
         SettingsStore.Instance.Update(c =>
         {
-            c.Menu.CategoriesHorizontal = HorizontalBox.IsChecked == true;
-            c.Menu.CategoriesOnLeft = CategoriesLeftBox.IsChecked == true;
-            c.Menu.ProfileOnBottom = ProfileBottomBox.IsChecked == true;
-            c.Menu.SearchOnBottom = SearchBottomBox.IsChecked == true;
-            c.Menu.CommandsNextToSearch = CommandsSearchBox.IsChecked == true;
             c.Menu.ProfileStyle = TagOf(ProfileBox);
             c.Menu.ButtonDisplay = TagOf(DisplayBox);
             c.Menu.ButtonTitle = TitleBox.Text;
@@ -327,14 +336,6 @@ public partial class SettingsWindow : Window
         SaveGeometry();
     }
 
-    void PanelOpacity_Changed(object sender, RoutedPropertyChangedEventArgs<double> e)
-    {
-        if (!IsLoaded || _loading || EnterOpacityValue == null) return;
-        EnterOpacityValue.Text = ((int)EnterOpacitySlider.Value).ToString();
-        LeaveOpacityValue.Text = ((int)LeaveOpacitySlider.Value).ToString();
-        SaveChrome();
-    }
-
     void Measure_LostFocus(object sender, RoutedEventArgs e)
     {
         RowSizeBox.Text = ReadInt(RowSizeBox.Text, 34, 16, 128).ToString();
@@ -359,7 +360,10 @@ public partial class SettingsWindow : Window
 
     void Color_Click(object sender, RoutedEventArgs e)
     {
-        var current = Ui.Parse(SettingsStore.Instance.Config.Panel.Background, System.Windows.Media.Color.FromRgb(0x17, 0x19, 0x1F));
+        bool text = sender == TextSwatch;
+        var current = Ui.Parse(
+            text ? SettingsStore.Instance.Config.Panel.Text : SettingsStore.Instance.Config.Panel.Background,
+            text ? System.Windows.Media.Color.FromRgb(0xE8, 0xE8, 0xEE) : System.Windows.Media.Color.FromRgb(0x17, 0x19, 0x1F));
         using var dialog = new System.Windows.Forms.ColorDialog
         {
             Color = System.Drawing.Color.FromArgb(current.R, current.G, current.B),
@@ -367,6 +371,13 @@ public partial class SettingsWindow : Window
         };
         if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK) return;
         string hex = $"#{dialog.Color.R:X2}{dialog.Color.G:X2}{dialog.Color.B:X2}";
+        if (text)
+        {
+            TextHexBox.Text = hex;
+            PaintTextSwatch(hex);
+            SettingsStore.Instance.Update(c => c.Panel.Text = hex, ConfigArea.PanelChrome);
+            return;
+        }
         HexBox.Text = hex;
         PaintSwatch(hex);
         SettingsStore.Instance.Update(c =>

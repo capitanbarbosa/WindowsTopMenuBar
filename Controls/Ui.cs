@@ -62,7 +62,7 @@ public static class Ui
     }
 
     public static SolidColorBrush PanelText() =>
-        SettingsStore.Instance.Config.Panel.DarkMode ? Text : Brush("#1B1D24");
+        Brush(SettingsStore.Instance.Config.Panel.Text, PanelConfig.DefaultText);
 
     public static double PanelIcon()
     {

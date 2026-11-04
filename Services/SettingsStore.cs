@@ -271,15 +271,21 @@ public sealed class SettingsStore
         config.Menu.SortCategories = false;
         config.Menu.RecentCount = 10;
         config.Menu.RecentIncludeFavorites = false;
+        config.Menu.CategoriesHorizontal = false;
+        config.Menu.CategoriesOnLeft = true;
+        config.Menu.ProfileOnBottom = true;
+        config.Menu.SearchOnBottom = false;
+        config.Menu.CommandsNextToSearch = false;
         config.Profiles ??= [];
         config.Panel.Height = Math.Clamp(config.Panel.Height, 16, 128);
         config.Panel.Rows = Math.Clamp(config.Panel.Rows, 1, 6);
         config.Panel.BorderWidth = Math.Clamp(config.Panel.BorderWidth, 0, 20);
         config.Panel.Length = Math.Clamp(config.Panel.Length, 80, 8000);
-        config.Panel.OpacityEnter = Math.Clamp(config.Panel.OpacityEnter, 0, 100);
-        config.Panel.OpacityLeave = Math.Clamp(config.Panel.OpacityLeave, 0, 100);
+        config.Panel.OpacityEnter = 100;
+        config.Panel.OpacityLeave = 100;
         if (string.IsNullOrWhiteSpace(config.Panel.Mode)) config.Panel.Mode = "Horizontal";
         if (string.IsNullOrWhiteSpace(config.Panel.BackgroundStyle)) config.Panel.BackgroundStyle = "Solid";
+        if (string.IsNullOrWhiteSpace(config.Panel.Text)) config.Panel.Text = PanelConfig.DefaultText;
         if (string.IsNullOrWhiteSpace(config.Panel.AutoHideMode))
             config.Panel.AutoHideMode = config.Panel.AutoHide ? "Always" : "Never";
         config.Panel.AutoHide = config.Panel.AutoHideMode is "Always" or "Intelligent";

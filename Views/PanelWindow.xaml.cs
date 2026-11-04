@@ -283,9 +283,7 @@ public partial class PanelWindow : Window
 
     void ApplyOpacity(bool over)
     {
-        var panel = SettingsStore.Instance.Config.Panel;
-        double value = (over ? panel.OpacityEnter : panel.OpacityLeave) / 100.0;
-        Opacity = Math.Clamp(value, 0.05, 1);
+        Opacity = 1;
     }
 
     void OnWindows()

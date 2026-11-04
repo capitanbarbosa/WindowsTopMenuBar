@@ -63,6 +63,7 @@ public sealed class PanelConfig
 {
     public const string DefaultBackground = "#17191F";
     public const string DefaultAccent = "#3B78E0";
+    public const string DefaultText = "#E8E8EE";
 
     public int Height { get; set; } = 34;
     public int Rows { get; set; } = 1;
@@ -77,9 +78,9 @@ public sealed class PanelConfig
     public string AutoHideMode { get; set; } = "Never";
     public string MonitorDevice { get; set; } = "";
     public bool ShowOnAllDisplays { get; set; } = true;
-    public bool DarkMode { get; set; } = true;
     public string BackgroundStyle { get; set; } = "Solid";
     public string Background { get; set; } = DefaultBackground;
+    public string Text { get; set; } = DefaultText;
     public string Accent { get; set; } = DefaultAccent;
     public bool AutoIconSize { get; set; } = true;
     public int OpacityEnter { get; set; } = 100;

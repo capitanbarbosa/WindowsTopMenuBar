@@ -22,7 +22,11 @@
         <Border DockPanel.Dock="Bottom" BorderBrush="#3E4252" BorderThickness="0,1,0,0" Padding="12,10">
             <DockPanel>
                 <Button DockPanel.Dock="Right" Content="Close" Width="96" Click="Close_Click" IsCancel="True"/>
-                <Button Content="Help" Width="84" HorizontalAlignment="Left" Click="Help_Click"/>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                    <Button Content="Help" Width="84" Click="Help_Click"/>
+                    <Button Content="Reset to defaults" Padding="12,4" MinWidth="140" Margin="8,0,0,0" Click="Reset_Click"
+                            ToolTip="Restore the factory panel layout, colors, items, and menu settings."/>
+                </StackPanel>
             </DockPanel>
         </Border>
 
@@ -336,7 +340,7 @@
                             <Button x:Name="ColorSwatch" Width="36" Height="28" Click="Color_Click" ToolTip="Choose a panel color"/>
                             <TextBox x:Name="HexBox" Width="108" Margin="8,0,0,0" VerticalAlignment="Center"
                                      FontFamily="Consolas" MaxLength="7"
-                                     ToolTip="Panel background hex, like #1E2D45"
+                                     ToolTip="Panel background hex, like #17191F"
                                      TextChanged="Hex_TextChanged" LostFocus="Hex_LostFocus" KeyDown="Hex_KeyDown"/>
                         </StackPanel>
                     </Grid>

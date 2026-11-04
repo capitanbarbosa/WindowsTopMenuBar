@@ -348,14 +348,32 @@ public partial class PanelWindow : Window
         var grid = new Grid();
         var remove = new Button
         {
-            Content = "×",
             Width = 16,
             Height = 16,
             Padding = new Thickness(0),
+            FontSize = 8,
+            BorderThickness = new Thickness(0),
+            HorizontalContentAlignment = HorizontalAlignment.Center,
+            VerticalContentAlignment = VerticalAlignment.Center,
             HorizontalAlignment = HorizontalAlignment.Right,
             VerticalAlignment = VerticalAlignment.Center,
             Margin = new Thickness(0, 0, 2, 0),
-            Focusable = false
+            Focusable = false,
+            SnapsToDevicePixels = true,
+            Content = new TextBlock
+            {
+                Text = "\uE711",
+                FontFamily = new FontFamily("Segoe MDL2 Assets"),
+                FontSize = 8,
+                LineHeight = 8,
+                LineStackingStrategy = LineStackingStrategy.BlockLineHeight,
+                TextAlignment = TextAlignment.Center,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                Padding = new Thickness(0),
+                Margin = new Thickness(0),
+                IsHitTestVisible = false
+            }
         };
         remove.Click += (_, _) => RemoveItem(item);
         grid.Children.Add(remove);

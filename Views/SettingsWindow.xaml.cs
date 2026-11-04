@@ -249,8 +249,8 @@ public partial class SettingsWindow : Window
 
     void PaintSwatch(string hex)
     {
-        hex = NormalizeHex(hex) ?? "#1E2D45";
-        var brush = Ui.Brush(hex, "#1E2D45");
+        hex = NormalizeHex(hex) ?? PanelConfig.DefaultBackground;
+        var brush = Ui.Brush(hex, PanelConfig.DefaultBackground);
         ColorSwatch.Background = brush;
         SetHexText(HexBox, hex);
     }
@@ -445,7 +445,7 @@ public partial class SettingsWindow : Window
 
     void Color_Click(object sender, RoutedEventArgs e)
     {
-        var current = Ui.Parse(SettingsStore.Instance.Config.Panel.Background, System.Windows.Media.Color.FromRgb(0x1E, 0x2D, 0x45));
+        var current = Ui.Parse(SettingsStore.Instance.Config.Panel.Background, System.Windows.Media.Color.FromRgb(0x17, 0x19, 0x1F));
         using var dialog = new System.Windows.Forms.ColorDialog
         {
             Color = System.Drawing.Color.FromArgb(current.R, current.G, current.B),
@@ -784,6 +784,14 @@ public partial class SettingsWindow : Window
         if (CommandList.SelectedItem is not CommandItem cmd) return;
         SettingsStore.Instance.Update(c => c.Menu.Commands.RemoveAll(i => i.Id == cmd.Id), ConfigArea.Menu);
         RefreshCommands();
+    }
+
+    void Reset_Click(object sender, RoutedEventArgs e)
+    {
+        if (!Dialogs.Ask(this, "Reset the panel colors, size, items, and menu settings to the factory defaults? Extra profiles are kept."))
+            return;
+        SettingsStore.Instance.ResetToDefaults();
+        LoadUi();
     }
 
     void Help_Click(object sender, RoutedEventArgs e) => Dialogs.Help(this);

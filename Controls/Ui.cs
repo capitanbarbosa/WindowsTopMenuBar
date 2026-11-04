@@ -2,6 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using WindowsWhisker.Models;
 using WindowsWhisker.Native;
 using WindowsWhisker.Services;
 
@@ -48,7 +49,7 @@ public static class Ui
 
     public static SolidColorBrush Accent() => Brush(SettingsStore.Instance.Config.Panel.Accent, "#3B78E0");
 
-    public static SolidColorBrush PanelBackground() => Brush(SettingsStore.Instance.Config.Panel.Background, "#1E2D45");
+    public static SolidColorBrush PanelBackground() => Brush(SettingsStore.Instance.Config.Panel.Background, PanelConfig.DefaultBackground);
 
     public static SolidColorBrush PanelCurrent() => ShadePanel(12, 11, 15);
 

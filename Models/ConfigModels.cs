@@ -61,6 +61,9 @@ public sealed class AppConfig
 
 public sealed class PanelConfig
 {
+    public const string DefaultBackground = "#17191F";
+    public const string DefaultAccent = "#3B78E0";
+
     public int Height { get; set; } = 34;
     public int Rows { get; set; } = 1;
     public int BorderWidth { get; set; }
@@ -73,11 +76,11 @@ public sealed class PanelConfig
     public bool AutoHide { get; set; }
     public string AutoHideMode { get; set; } = "Never";
     public string MonitorDevice { get; set; } = "";
-    public bool ShowOnAllDisplays { get; set; }
+    public bool ShowOnAllDisplays { get; set; } = true;
     public bool DarkMode { get; set; } = true;
     public string BackgroundStyle { get; set; } = "Solid";
-    public string Background { get; set; } = "#1E2D45";
-    public string Accent { get; set; } = "#3B78E0";
+    public string Background { get; set; } = DefaultBackground;
+    public string Accent { get; set; } = DefaultAccent;
     public bool AutoIconSize { get; set; } = true;
     public int OpacityEnter { get; set; } = 100;
     public int OpacityLeave { get; set; } = 100;
@@ -161,24 +164,30 @@ public sealed class PanelItem
 
     public static List<PanelItem> CreateDefault()
     {
-        var items = new List<PanelItem> { new() { Kind = PanelKinds.Menu } };
-
-        var terminal = FindTerminal();
-        items.Add(Launcher(terminal, "Terminal"));
-
         var explorer = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe");
-        items.Add(Launcher(explorer, "Files"));
-
-        var browser = FindBrowser();
-        if (browser != null)
-            items.Add(Launcher(browser, BrowserLabel(browser)));
-
-        items.Add(new PanelItem { Kind = PanelKinds.DesktopShifter });
-        items.Add(new PanelItem { Kind = PanelKinds.Separator, Style = "Transparent", Expand = true });
-        items.Add(new PanelItem { Kind = PanelKinds.Clock });
-        items.Add(new PanelItem { Kind = PanelKinds.Settings });
-        return items;
+        return
+        [
+            new() { Kind = PanelKinds.Menu },
+            Launcher(FindTerminal(), "Terminal"),
+            Launcher(explorer, "Files"),
+            CompactSeparator(),
+            new() { Kind = PanelKinds.DesktopShifter },
+            CompactSeparator(),
+            new() { Kind = PanelKinds.ShowDesktop },
+            new() { Kind = PanelKinds.TaskList },
+            new() { Kind = PanelKinds.Separator, Style = "Transparent", Expand = true },
+            new() { Kind = PanelKinds.CpuGraph },
+            new() { Kind = PanelKinds.Clock },
+            new() { Kind = PanelKinds.Settings }
+        ];
     }
+
+    static PanelItem CompactSeparator() => new()
+    {
+        Kind = PanelKinds.Separator,
+        Style = "Separator",
+        Expand = false
+    };
 
     static string FindTerminal()
     {
@@ -191,27 +200,6 @@ public sealed class PanelItem
         return File.Exists(ps) ? ps : "powershell.exe";
     }
 
-    static string? FindBrowser()
-    {
-        string[] candidates =
-        [
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Google", "Chrome", "Application", "chrome.exe"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Google", "Chrome", "Application", "chrome.exe"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Mozilla Firefox", "firefox.exe"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86), "Microsoft", "Edge", "Application", "msedge.exe"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles), "Microsoft", "Edge", "Application", "msedge.exe")
-        ];
-        return candidates.FirstOrDefault(File.Exists);
-    }
-
-    static string BrowserLabel(string path)
-    {
-        var name = Path.GetFileNameWithoutExtension(path).ToLowerInvariant();
-        if (name.Contains("chrome")) return "Chrome";
-        if (name.Contains("firefox")) return "Firefox";
-        if (name.Contains("edge") || name.Contains("msedge")) return "Edge";
-        return "Browser";
-    }
 }
 
 public sealed class MenuConfig

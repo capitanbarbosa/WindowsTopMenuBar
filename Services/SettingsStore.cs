@@ -143,10 +143,28 @@ public sealed class SettingsStore
         profile.Panel = ClonePanel(Config.Panel);
     }
 
-    static PanelConfig ClonePanel(PanelConfig panel)
+    public void ResetToDefaults()
     {
-        var json = JsonSerializer.Serialize(panel, JsonOptions);
-        return JsonSerializer.Deserialize<PanelConfig>(json, JsonOptions) ?? new PanelConfig();
+        var factory = new AppConfig();
+        Config.Panel = ClonePanel(factory.Panel);
+        Config.Menu = Clone(factory.Menu);
+        Config.RunAtStartup = factory.RunAtStartup;
+        RememberActive();
+        Normalize(Config);
+        AreaChanged?.Invoke(ConfigArea.PanelGeometry);
+        AreaChanged?.Invoke(ConfigArea.PanelItems);
+        AreaChanged?.Invoke(ConfigArea.PanelChrome);
+        AreaChanged?.Invoke(ConfigArea.Menu);
+        SaveNow();
+        StartupService.Apply(Config.RunAtStartup);
+    }
+
+    static PanelConfig ClonePanel(PanelConfig panel) => Clone(panel);
+
+    static T Clone<T>(T value) where T : class, new()
+    {
+        var json = JsonSerializer.Serialize(value, JsonOptions);
+        return JsonSerializer.Deserialize<T>(json, JsonOptions) ?? new T();
     }
 
     sealed class ProfileFile

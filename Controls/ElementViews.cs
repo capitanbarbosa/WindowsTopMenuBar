@@ -486,7 +486,7 @@ public sealed class TaskListView : Grid
         if (!force && order == _order && _row.Children.Count == windows.Count)
         {
             for (int i = 0; i < windows.Count; i++)
-                PaintButton((Button)_row.Children[i], windows[i]);
+                PaintButton((Grid)_row.Children[i], windows[i]);
             Resize(windows.Count, avail);
             return;
         }
@@ -506,28 +506,42 @@ public sealed class TaskListView : Grid
             _scroll.VerticalScrollBarVisibility = overflow ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden;
         else
             _scroll.HorizontalScrollBarVisibility = overflow ? ScrollBarVisibility.Auto : ScrollBarVisibility.Hidden;
-        foreach (Button button in _row.Children)
+        foreach (Grid host in _row.Children)
         {
-            if (_vertical) button.Height = size;
-            else button.Width = size;
+            if (_vertical) host.Height = size;
+            else host.Width = size;
         }
     }
 
-    Button MakeButton(WindowInfo window)
+    Grid MakeButton(WindowInfo window)
     {
         var button = Ui.Flat();
-        button.HorizontalAlignment = HorizontalAlignment.Left;
+        button.Margin = new Thickness(0);
         button.Padding = new Thickness(4, 0, 4, 0);
-        button.Margin = new Thickness(1, 2, 1, 2);
-        PaintButton(button, window);
+        button.HorizontalAlignment = HorizontalAlignment.Stretch;
+        button.VerticalAlignment = VerticalAlignment.Stretch;
+        var underline = new Border
+        {
+            Height = _vertical ? double.NaN : 2,
+            Width = _vertical ? 2 : double.NaN,
+            HorizontalAlignment = _vertical ? HorizontalAlignment.Left : HorizontalAlignment.Stretch,
+            VerticalAlignment = _vertical ? VerticalAlignment.Stretch : VerticalAlignment.Bottom,
+            Background = Brushes.Transparent,
+            SnapsToDevicePixels = true,
+            IsHitTestVisible = false
+        };
+        var host = new Grid { Margin = new Thickness(1, 0, 1, 0) };
+        host.Children.Add(button);
+        host.Children.Add(underline);
+        PaintButton(host, window);
         button.Click += (_, _) =>
         {
-            if (button.Tag is WindowInfo info)
+            if (host.Tag is WindowInfo info)
                 WindowTracker.Instance.Activate(info.Handle);
         };
         button.MouseUp += (_, e) =>
         {
-            if (e.ChangedButton == MouseButton.Middle && button.Tag is WindowInfo info)
+            if (e.ChangedButton == MouseButton.Middle && host.Tag is WindowInfo info)
             {
                 WindowTracker.Instance.Close(info.Handle);
                 e.Handled = true;
@@ -535,20 +549,21 @@ public sealed class TaskListView : Grid
         };
         button.MouseRightButtonUp += (_, e) =>
         {
-            if (button.Tag is WindowInfo info)
+            if (host.Tag is WindowInfo info)
                 ShowWindowMenu(info, button);
             e.Handled = true;
         };
-        return button;
+        return host;
     }
 
-    static void PaintButton(Button button, WindowInfo window)
+    void PaintButton(Grid host, WindowInfo window)
     {
-        button.Tag = window;
+        host.Tag = window;
+        if (host.Children[0] is not Button button || host.Children[1] is not Border underline)
+            return;
         button.ToolTip = window.Title;
-        button.Background = window.IsForeground
-            ? new SolidColorBrush(Color.FromArgb(150, Ui.Accent().Color.R, Ui.Accent().Color.G, Ui.Accent().Color.B))
-            : Brushes.Transparent;
+        button.Background = Brushes.Transparent;
+        underline.Background = window.IsForeground ? Ui.Accent() : Brushes.Transparent;
         double iconSize = Ui.LauncherIcon();
         if (window.Icon != null)
         {

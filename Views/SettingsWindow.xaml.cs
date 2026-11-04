@@ -19,7 +19,6 @@ public partial class SettingsWindow : Window
         Ui.DarkTitle(this);
         FillMonitors();
         LoadUi();
-        ShowPanelSub("display");
         SelectTab(string.IsNullOrWhiteSpace(tab) ? "panel" : tab);
         SettingsStore.Instance.AreaChanged += OnExternal;
         Closed += (_, _) => SettingsStore.Instance.AreaChanged -= OnExternal;
@@ -29,10 +28,14 @@ public partial class SettingsWindow : Window
     {
         if (tab is "general" or "commands" or "search")
             tab = "appearance";
+        if (tab == "display")
+            tab = "panel";
         PagePanel.Visibility = tab == "panel" ? Visibility.Visible : Visibility.Collapsed;
+        PageItems.Visibility = tab == "items" ? Visibility.Visible : Visibility.Collapsed;
         PageAppearance.Visibility = tab == "appearance" ? Visibility.Visible : Visibility.Collapsed;
         PageBehavior.Visibility = tab == "behavior" ? Visibility.Visible : Visibility.Collapsed;
         TabPanel.IsChecked = tab == "panel";
+        TabItems.IsChecked = tab == "items";
         TabAppearance.IsChecked = tab == "appearance";
         TabBehavior.IsChecked = tab == "behavior";
     }
@@ -139,16 +142,6 @@ public partial class SettingsWindow : Window
         _loading = loading;
         UpdateEditButton();
     }
-
-    void ShowPanelSub(string page)
-    {
-        PanelPageDisplay.Visibility = page == "display" ? Visibility.Visible : Visibility.Collapsed;
-        PanelPageItems.Visibility = page == "items" ? Visibility.Visible : Visibility.Collapsed;
-        PanelTabDisplay.IsChecked = page == "display";
-        PanelTabItems.IsChecked = page == "items";
-    }
-
-    void PanelSub_Click(object sender, RoutedEventArgs e) => ShowPanelSub((string)((FrameworkElement)sender).Tag);
 
     void FillProfiles()
     {

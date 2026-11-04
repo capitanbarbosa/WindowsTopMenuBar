@@ -284,8 +284,8 @@ public static class Dialogs
         {
             Text = "This is a Kali-style panel for Windows.\n\n" +
                    "The bar keeps a reserved strip of the desktop, so maximized windows sit against it instead of covering it.\n\n" +
-                   "Panel settings has the Kali panel pages: display, appearance, and items. Lock the panel there, set the row size, length, opacity, and color, and reorder the items. While the panel is unlocked you can also drag elements and drag the inner edge to change the row size.\n\n" +
-                   "On the Items page, the panel contents are a vertical list. Drag a row, or use the arrows, to reorder it. Add opens Add New Items, where you can search for a separator, a clipboard shortcut, a launcher, and the other panel pieces.\n\n" +
+                   "Panel settings has the display options: lock the panel, set the row size, length, opacity, and color. While the panel is unlocked you can also drag elements and drag the inner edge to change the row size.\n\n" +
+                   "The Items page lists the panel contents. Drag a row, or use the arrows, to reorder it. Add opens Add New Items, where you can search for a separator, a clipboard shortcut, a launcher, and the other panel pieces.\n\n" +
                    "Add launchers from the panel menu, from Panel settings, or by right-clicking an application and choosing Pin to panel. You can also drag an application out of the menu onto the bar.\n\n" +
                    "Alt+F1 opens the application menu. The menu shows favorites, recently used, and all applications, with Settings and Quit along the bottom.\n\n" +
                    "The desktop shifter is the row of numbered desktops. Click one to switch, scroll to move between them, and right-click to add, rename, or remove a desktop.\n\n" +

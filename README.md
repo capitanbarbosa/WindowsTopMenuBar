@@ -68,7 +68,7 @@ Then run again.
 - Drag an app out of the menu onto the bar to pin it
 - Workspace chips: click to switch, scroll to move, right-click to rename / add / remove
 
-Settings live under **Panel** (display, appearance, items), plus Appearance and Behavior for the menu.
+Settings live under **Panel**, **Items**, Appearance, and Behavior.
 
 ## Files
 

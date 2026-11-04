@@ -12,6 +12,7 @@
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Margin="12,10,12,0">
             <ToggleButton x:Name="TabPanel" Content="Panel" Style="{StaticResource TabToggle}" Tag="panel" Click="Tab_Click"/>
+            <ToggleButton x:Name="TabItems" Content="Items" Style="{StaticResource TabToggle}" Tag="items" Click="Tab_Click"/>
             <ToggleButton x:Name="TabAppearance" Content="Appearance" Style="{StaticResource TabToggle}" Tag="appearance" Click="Tab_Click"/>
             <ToggleButton x:Name="TabBehavior" Content="Behavior" Style="{StaticResource TabToggle}" Tag="behavior" Click="Tab_Click"/>
         </StackPanel>
@@ -49,13 +50,7 @@
                             <Button Content="−" Width="32" Margin="4,0,0,0" Click="ProfileRemove_Click"/>
                         </StackPanel>
                     </Grid>
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,8">
-                        <ToggleButton x:Name="PanelTabDisplay" Content="Display" Style="{StaticResource TabToggle}" Tag="display" Click="PanelSub_Click"/>
-                        <ToggleButton x:Name="PanelTabItems" Content="Items" Style="{StaticResource TabToggle}" Tag="items" Click="PanelSub_Click"/>
-                    </StackPanel>
-
-                    <StackPanel x:Name="PanelPageDisplay">
-                        <TextBlock Text="General" Style="{StaticResource GroupHeader}"/>
+                    <TextBlock Text="General" Style="{StaticResource GroupHeader}"/>
                         <Grid Margin="0,4">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="220"/>
@@ -155,41 +150,45 @@
                             <TextBlock x:Name="LengthValue" Grid.Column="2" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                         </Grid>
                         <CheckBox x:Name="AutoLengthBox" Content="Automatically increase the length" Click="Geometry_Click"/>
-                    </StackPanel>
-
-                    <StackPanel x:Name="PanelPageItems" Visibility="Collapsed">
-                        <TextBlock Text="Drag an item up or down, or use the arrows." Style="{StaticResource Hint}" Margin="0,0,0,8"/>
-                        <Grid Height="250">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <ListBox x:Name="ElementList" SelectionChanged="Element_Selected"
-                                     AllowDrop="True" PreviewMouseLeftButtonDown="Element_Press"
-                                     PreviewMouseMove="Element_Drag" DragOver="Element_DragOver" Drop="Element_Drop">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <StackPanel Orientation="Horizontal" Margin="2,2">
-                                            <TextBlock Text="{Binding Glyph}" FontFamily="Segoe MDL2 Assets" FontSize="14"
-                                                       Width="24" Foreground="White" VerticalAlignment="Center"/>
-                                            <TextBlock Text="{Binding Summary}" Foreground="White" VerticalAlignment="Center"/>
-                                        </StackPanel>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Top">
-                                <Button Content="↑" Width="36" Height="36" Click="Up_Click" ToolTip="Move up"/>
-                                <Button Content="↓" Width="36" Height="36" Margin="0,6,0,0" Click="Down_Click" ToolTip="Move down"/>
-                            </StackPanel>
-                        </Grid>
-                        <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
-                            <Button Content="+  Add" Width="96" Margin="0,0,8,0" Click="Add_Click" ToolTip="Add new items"/>
-                            <Button Content="—  Remove" Width="96" Margin="0,0,8,0" Click="Remove_Click"/>
-                            <Button x:Name="EditElementButton" Content="Properties" Width="96" Click="Edit_Click"/>
-                        </StackPanel>
-                    </StackPanel>
                 </StackPanel>
             </ScrollViewer>
+
+            <Grid x:Name="PageItems" Margin="18,8,18,12" Visibility="Collapsed">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock Text="Drag an item up or down, or use the arrows." Style="{StaticResource Hint}" Margin="0,0,0,8"/>
+                <Grid Grid.Row="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="Auto"/>
+                    </Grid.ColumnDefinitions>
+                    <ListBox x:Name="ElementList" SelectionChanged="Element_Selected"
+                             AllowDrop="True" PreviewMouseLeftButtonDown="Element_Press"
+                             PreviewMouseMove="Element_Drag" DragOver="Element_DragOver" Drop="Element_Drop">
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" Margin="2,2">
+                                    <TextBlock Text="{Binding Glyph}" FontFamily="Segoe MDL2 Assets" FontSize="14"
+                                               Width="24" Foreground="White" VerticalAlignment="Center"/>
+                                    <TextBlock Text="{Binding Summary}" Foreground="White" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0" VerticalAlignment="Top">
+                        <Button Content="↑" Width="36" Height="36" Click="Up_Click" ToolTip="Move up"/>
+                        <Button Content="↓" Width="36" Height="36" Margin="0,6,0,0" Click="Down_Click" ToolTip="Move down"/>
+                    </StackPanel>
+                </Grid>
+                <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,8,0,0">
+                    <Button Content="+  Add" Width="96" Margin="0,0,8,0" Click="Add_Click" ToolTip="Add new items"/>
+                    <Button Content="—  Remove" Width="96" Margin="0,0,8,0" Click="Remove_Click"/>
+                    <Button x:Name="EditElementButton" Content="Properties" Width="96" Click="Edit_Click"/>
+                </StackPanel>
+            </Grid>
 
             <ScrollViewer x:Name="PageAppearance" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
                 <StackPanel Margin="18,8,18,12">

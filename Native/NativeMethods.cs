@@ -241,6 +241,22 @@ public static class Win32
     [DllImport("user32.dll")]
     public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
 
+    public const uint SMTO_ABORTIFHUNG = 0x0002;
+
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern IntPtr SendMessageTimeout(
+        IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam, uint fuFlags, uint uTimeout, out IntPtr lpdwResult);
+
+    [DllImport("user32.dll")]
+    public static extern IntPtr CopyIcon(IntPtr hIcon);
+
+    public static IntPtr SendMessageTimed(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, uint ms = 50)
+    {
+        if (SendMessageTimeout(hwnd, msg, wParam, lParam, SMTO_ABORTIFHUNG, ms, out var result) == IntPtr.Zero)
+            return IntPtr.Zero;
+        return result;
+    }
+
     [DllImport("user32.dll", EntryPoint = "GetClassLongPtrW")]
     public static extern IntPtr GetClassLongPtr(IntPtr hWnd, int nIndex);
 

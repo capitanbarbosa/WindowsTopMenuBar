@@ -139,6 +139,19 @@ public partial class PanelWindow : Window
 
     IntPtr WndProc(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
     {
+        try
+        {
+            return WndProcCore(hwnd, msg, wParam, lParam, ref handled);
+        }
+        catch (Exception ex)
+        {
+            Log.Error("wndproc", ex);
+            return IntPtr.Zero;
+        }
+    }
+
+    IntPtr WndProcCore(IntPtr hwnd, int msg, IntPtr wParam, IntPtr lParam, ref bool handled)
+    {
         if (msg == Win32.WM_QUERYENDSESSION)
             _allowClose = true;
 
@@ -168,18 +181,47 @@ public partial class PanelWindow : Window
 
         int code = _appbar.Consume(msg, wParam, lParam);
         if (code == Win32.ABN_POSCHANGED && !_fullscreen && !_applying)
-            ApplyGeometry();
+            Dispatcher.BeginInvoke(ApplyGeometry);
         else if (code == Win32.ABN_FULLSCREENAPP)
-            SetFullscreen(lParam != IntPtr.Zero);
+        {
+            bool on = lParam != IntPtr.Zero;
+            Dispatcher.BeginInvoke(() =>
+            {
+                if (on && IsTransientOverlay()) return;
+                SetFullscreen(on);
+            });
+        }
 
         if (msg is Win32.WM_DISPLAYCHANGE or Win32.WM_DPICHANGED or Win32.WM_SETTINGCHANGE)
         {
-            ApplyGeometry();
-            if (msg == Win32.WM_DISPLAYCHANGE)
-                PanelManager.Instance.NotifyDisplays();
+            Dispatcher.BeginInvoke(() =>
+            {
+                ApplyGeometry();
+                if (msg == Win32.WM_DISPLAYCHANGE)
+                    PanelManager.Instance.NotifyDisplays();
+            });
         }
 
         return IntPtr.Zero;
+    }
+
+    static bool IsTransientOverlay()
+    {
+        try
+        {
+            var hwnd = Win32.GetForegroundWindow();
+            if (hwnd == IntPtr.Zero) return true;
+            Win32.GetWindowThreadProcessId(hwnd, out uint pid);
+            string name = Path.GetFileNameWithoutExtension(Win32.QueryProcessPath(pid) ?? "");
+            return name.Equals("ScreenClippingHost", StringComparison.OrdinalIgnoreCase)
+                || name.Equals("SnippingTool", StringComparison.OrdinalIgnoreCase)
+                || name.Equals("ScreenSketch", StringComparison.OrdinalIgnoreCase)
+                || name.Equals("PickerHost", StringComparison.OrdinalIgnoreCase);
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     void OnConfig(ConfigArea area)

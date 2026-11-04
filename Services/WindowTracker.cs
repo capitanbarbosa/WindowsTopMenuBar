@@ -14,7 +14,13 @@ public sealed class WindowTracker
     {
         "Progman", "Shell_TrayWnd", "Shell_SecondaryTrayWnd", "NotifyIconOverflowWindow",
         "Windows.UI.Core.CoreWindow", "ForegroundStaging", "MultitaskingViewFrame",
-        "XamlExplorerHostIslandWindow", "ApplicationManager_DesktopShellWindow"
+        "XamlExplorerHostIslandWindow", "ApplicationManager_DesktopShellWindow",
+        "Windows.Internal.Shell.TabShellWindow", "ScreenClippingHost"
+    };
+
+    static readonly HashSet<string> SkipProcesses = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "ScreenClippingHost", "SnippingTool", "ScreenSketch", "PickerHost"
     };
 
     readonly Dictionary<IntPtr, ImageSource> _icons = new();
@@ -95,16 +101,31 @@ public sealed class WindowTracker
 
     void Refresh()
     {
+        try
+        {
+            RefreshCore();
+        }
+        catch (Exception ex)
+        {
+            Log.Error("window refresh", ex);
+        }
+    }
+
+    void RefreshCore()
+    {
         var found = new List<WindowInfo>();
         var foreground = Win32.GetForegroundWindow();
         uint self = (uint)Environment.ProcessId;
         Win32.EnumWindows((hwnd, _) =>
         {
-            Collect(hwnd, self, foreground, found);
+            try { Collect(hwnd, self, foreground, found); }
+            catch (Exception ex) { Log.Error("window collect", ex); }
             return true;
         }, IntPtr.Zero);
 
-        var live = found.ToDictionary(w => w.Handle);
+        var live = new Dictionary<IntPtr, WindowInfo>();
+        foreach (var window in found)
+            live[window.Handle] = window;
         var ordered = new List<WindowInfo>(_windows.Count + found.Count);
         foreach (var existing in _windows)
         {
@@ -166,6 +187,15 @@ public sealed class WindowTracker
         if (pid == self) return false;
         var cls = Win32.GetClassName(hwnd);
         if (SkipClasses.Contains(cls)) return false;
+        string process = "";
+        try
+        {
+            string? path = Win32.QueryProcessPath(pid);
+            if (!string.IsNullOrWhiteSpace(path))
+                process = Path.GetFileNameWithoutExtension(path);
+        }
+        catch { }
+        if (SkipProcesses.Contains(process)) return false;
         var title = Win32.GetWindowText(hwnd);
         if (string.IsNullOrWhiteSpace(title)) return false;
         if (title == "Program Manager") return false;
@@ -174,22 +204,29 @@ public sealed class WindowTracker
 
     static ImageSource? ReadIcon(IntPtr hwnd, string? path)
     {
-        IntPtr hIcon = Win32.SendMessage(hwnd, Win32.WM_GETICON, (IntPtr)Win32.ICON_BIG, IntPtr.Zero);
-        if (hIcon == IntPtr.Zero)
-            hIcon = Win32.SendMessage(hwnd, Win32.WM_GETICON, (IntPtr)Win32.ICON_SMALL2, IntPtr.Zero);
-        if (hIcon == IntPtr.Zero)
-            hIcon = Win32.SendMessage(hwnd, Win32.WM_GETICON, (IntPtr)Win32.ICON_SMALL, IntPtr.Zero);
-        if (hIcon == IntPtr.Zero)
-            hIcon = Win32.GetClassLongPtr(hwnd, Win32.GCL_HICONSM);
-        if (hIcon == IntPtr.Zero)
-            hIcon = Win32.GetClassLongPtr(hwnd, Win32.GCL_HICON);
-        if (hIcon != IntPtr.Zero)
+        try
         {
-            var image = IconService.FromHIconShared(hIcon);
-            if (image != null) return image;
+            IntPtr hIcon = Win32.SendMessageTimed(hwnd, Win32.WM_GETICON, (IntPtr)Win32.ICON_BIG, IntPtr.Zero);
+            if (hIcon == IntPtr.Zero)
+                hIcon = Win32.SendMessageTimed(hwnd, Win32.WM_GETICON, (IntPtr)Win32.ICON_SMALL2, IntPtr.Zero);
+            if (hIcon == IntPtr.Zero)
+                hIcon = Win32.SendMessageTimed(hwnd, Win32.WM_GETICON, (IntPtr)Win32.ICON_SMALL, IntPtr.Zero);
+            if (hIcon == IntPtr.Zero)
+                hIcon = Win32.GetClassLongPtr(hwnd, Win32.GCL_HICONSM);
+            if (hIcon == IntPtr.Zero)
+                hIcon = Win32.GetClassLongPtr(hwnd, Win32.GCL_HICON);
+            if (hIcon != IntPtr.Zero)
+            {
+                var image = IconService.FromHIconShared(hIcon);
+                if (image != null) return image;
+            }
+            if (!string.IsNullOrWhiteSpace(path))
+                return IconService.Get(path, 0, 32);
         }
-        if (!string.IsNullOrWhiteSpace(path))
-            return IconService.Get(path, 0, 32);
+        catch (Exception ex)
+        {
+            Log.Error("window icon", ex);
+        }
         return null;
     }
 }

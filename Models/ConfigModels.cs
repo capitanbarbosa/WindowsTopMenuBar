@@ -260,14 +260,14 @@ public sealed class CommandItem
     public bool Visible { get; set; } = true;
     public bool Confirm { get; set; }
 
+    public static readonly HashSet<string> RetiredKinds = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "lock", "sleep", "logoff", "restart", "shutdown"
+    };
+
     public static List<CommandItem> CreateDefault() =>
     [
-        new() { Id = "settings", Name = "Settings", Kind = "settings", Confirm = false },
-        new() { Id = "lock", Name = "Lock", Kind = "lock", Confirm = false },
-        new() { Id = "sleep", Name = "Sleep", Kind = "sleep", Confirm = true },
-        new() { Id = "logoff", Name = "Log Out", Kind = "logoff", Confirm = true },
-        new() { Id = "restart", Name = "Restart", Kind = "restart", Confirm = true },
-        new() { Id = "shutdown", Name = "Shut Down", Kind = "shutdown", Confirm = true }
+        new() { Id = "settings", Name = "Settings", Kind = "settings", Confirm = false }
     ];
 }
 

@@ -55,7 +55,13 @@ public sealed class MenuWindow : Window
             AppCatalogService.Instance.Changed -= OnCatalog;
         };
         Content = Build();
-        Loaded += (_, _) => _search?.Focus();
+        Loaded += (_, _) =>
+        {
+            if (_search == null) return;
+            _search.Focus();
+            _search.CaretIndex = 0;
+            AlignSearchWatermark();
+        };
     }
 
     public void Place(FrameworkElement anchor)
@@ -171,6 +177,26 @@ public sealed class MenuWindow : Window
         }
     }
 
+    void AlignSearchWatermark()
+    {
+        if (_search == null || _watermark == null) return;
+        bool empty = _search.Text.Length == 0;
+        _watermark.Visibility = empty ? Visibility.Visible : Visibility.Collapsed;
+        if (!empty || !_search.IsLoaded) return;
+        try
+        {
+            var rect = _search.GetRectFromCharacterIndex(0);
+            if (rect.IsEmpty || double.IsInfinity(rect.X) || double.IsNaN(rect.X)) return;
+            var margin = new Thickness(Math.Max(0, rect.X), Math.Max(0, rect.Y), 0, 0);
+            if (_watermark.Margin != margin)
+                _watermark.Margin = margin;
+        }
+        catch
+        {
+            // Layout can ask before the text view exists.
+        }
+    }
+
     UIElement Build()
     {
         var config = SettingsStore.Instance.Config.Menu;
@@ -184,21 +210,22 @@ public sealed class MenuWindow : Window
             ClipToBounds = true
         };
 
-        _search = new TextBox { FontSize = 14, Padding = new Thickness(8, 6, 8, 6) };
+        _search = new TextBox { FontSize = 14, Padding = new Thickness(10, 6, 10, 6) };
         _watermark = new TextBlock
         {
             Text = "Search applications",
+            FontSize = 14,
             Foreground = Ui.Muted,
-            Margin = new Thickness(12, 0, 0, 0),
-            VerticalAlignment = VerticalAlignment.Center,
-            IsHitTestVisible = false
+            IsHitTestVisible = false,
+            HorizontalAlignment = HorizontalAlignment.Left,
+            VerticalAlignment = VerticalAlignment.Top
         };
         _search.TextChanged += (_, _) =>
         {
-            if (_watermark != null)
-                _watermark.Visibility = _search.Text.Length == 0 ? Visibility.Visible : Visibility.Collapsed;
+            AlignSearchWatermark();
             if (!_reloading) FillApps();
         };
+        _search.LayoutUpdated += (_, _) => AlignSearchWatermark();
         _search.PreviewKeyDown += (_, e) =>
         {
             if (e.Key == Key.Down && _apps is { Items.Count: > 0 })

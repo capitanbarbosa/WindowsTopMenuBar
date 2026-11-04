@@ -63,16 +63,23 @@ public static class IconService
     public static ImageSource? FromHIconShared(IntPtr hIcon)
     {
         if (hIcon == IntPtr.Zero) return null;
+        IntPtr copy = IntPtr.Zero;
         try
         {
+            copy = Win32.CopyIcon(hIcon);
+            if (copy == IntPtr.Zero) return null;
             var bmp = System.Windows.Interop.Imaging.CreateBitmapSourceFromHIcon(
-                hIcon, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
+                copy, Int32Rect.Empty, BitmapSizeOptions.FromEmptyOptions());
             bmp.Freeze();
             return bmp;
         }
         catch
         {
             return null;
+        }
+        finally
+        {
+            if (copy != IntPtr.Zero) Win32.DestroyIcon(copy);
         }
     }
 

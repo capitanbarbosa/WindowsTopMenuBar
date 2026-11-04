@@ -249,6 +249,9 @@ public sealed class SettingsStore
         config.Recent ??= [];
         config.Panel.Items ??= PanelItem.CreateDefault();
         config.Menu.Commands ??= CommandItem.CreateDefault();
+        config.Menu.Commands.RemoveAll(c => CommandItem.RetiredKinds.Contains(c.Kind));
+        if (config.Menu.Commands.All(c => c.Kind != "settings"))
+            config.Menu.Commands.Insert(0, new CommandItem { Id = "settings", Name = "Settings", Kind = "settings", Confirm = false, Visible = true });
         config.Profiles ??= [];
         config.Panel.Height = Math.Clamp(config.Panel.Height, 16, 128);
         config.Panel.Rows = Math.Clamp(config.Panel.Rows, 1, 6);

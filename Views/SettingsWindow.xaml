@@ -441,7 +441,7 @@
             <ScrollViewer x:Name="PageCommands" VerticalScrollBarVisibility="Auto" Visibility="Collapsed">
                 <StackPanel Margin="18,8,18,12">
                     <TextBlock Text="Session commands" Style="{StaticResource GroupHeader}"/>
-                    <TextBlock Style="{StaticResource Hint}" Text="These are the buttons along the bottom of the menu, or beside the search box. Built-in commands lock, sleep, sign out, restart, and shut down. A custom command runs a program."/>
+                    <TextBlock Style="{StaticResource Hint}" Text="These are the buttons along the bottom of the menu, or beside the search box. Settings and Quit are always available. A custom command runs a program."/>
                     <ListBox x:Name="CommandList" Height="160" SelectionChanged="Command_Selected"/>
                     <Grid Margin="0,10,0,0">
                         <Grid.ColumnDefinitions>

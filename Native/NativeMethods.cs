@@ -258,6 +258,9 @@ public static class Win32
     [DllImport("kernel32.dll")]
     public static extern bool CloseHandle(IntPtr hObject);
 
+    [DllImport("kernel32.dll", SetLastError = true)]
+    public static extern bool GetSystemTimes(out FILETIME lpIdleTime, out FILETIME lpKernelTime, out FILETIME lpUserTime);
+
     [DllImport("user32.dll")]
     public static extern bool DestroyIcon(IntPtr hIcon);
 
@@ -397,6 +400,14 @@ public struct POINT
 {
     public int X;
     public int Y;
+}
+
+[StructLayout(LayoutKind.Sequential)]
+public struct FILETIME
+{
+    public uint dwLowDateTime;
+    public uint dwHighDateTime;
+    public readonly ulong Value => ((ulong)dwHighDateTime << 32) | dwLowDateTime;
 }
 
 [StructLayout(LayoutKind.Sequential)]

@@ -24,6 +24,7 @@ public static class ElementViews
             PanelKinds.ShowDesktop => ShowDesktopButton(item, actions, vertical),
             PanelKinds.Clipboard => ClipboardButton(item, actions, vertical),
             PanelKinds.Settings => SettingsButton(item, actions, vertical),
+            PanelKinds.CpuGraph => CpuGraph(item, actions, vertical),
             PanelKinds.Spacer => Spacer(item, actions, vertical),
             _ => Separator(item, actions, vertical)
         };
@@ -189,6 +190,13 @@ public static class ElementViews
         button.Click += (_, _) => actions.OpenSettings();
         AttachItemMenu(button, item, actions);
         return button;
+    }
+
+    static FrameworkElement CpuGraph(PanelItem item, PanelActions actions, bool vertical)
+    {
+        var view = new CpuGraphView(actions, vertical);
+        AttachItemMenu(view, item, actions);
+        return view;
     }
 
     static FrameworkElement Spacer(PanelItem item, PanelActions actions, bool vertical)

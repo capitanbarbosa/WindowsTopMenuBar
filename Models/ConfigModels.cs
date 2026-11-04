@@ -14,6 +14,7 @@ public static class PanelKinds
     public const string ShowDesktop = "ShowDesktop";
     public const string Clipboard = "Clipboard";
     public const string Settings = "Settings";
+    public const string CpuGraph = "CpuGraph";
 }
 
 public sealed record PanelPlugin(string Kind, string Name, string Description, string Glyph);
@@ -31,7 +32,8 @@ public static class PanelPlugins
         new(PanelKinds.Settings, "Settings", "Opens panel and menu settings.", "\uE713"),
         new(PanelKinds.DesktopShifter, "Workspace Switcher", "Switch between virtual desktops.", "\uE7C1"),
         new(PanelKinds.TaskList, "Window Buttons", "A button for each open window.", "\uE737"),
-        new(PanelKinds.ShowDesktop, "Show Desktop", "Hides windows and shows the desktop.", "\uE7F4")
+        new(PanelKinds.ShowDesktop, "Show Desktop", "Hides windows and shows the desktop.", "\uE7F4"),
+        new(PanelKinds.CpuGraph, "CPU Graph", "A Kali-style meter of recent CPU usage.", "\uE9D2")
     ];
 
     public static string GlyphFor(string kind) =>
@@ -114,6 +116,7 @@ public sealed class PanelItem
         PanelKinds.ShowDesktop => "Show Desktop",
         PanelKinds.Clipboard => "Clipboard",
         PanelKinds.Settings => "Settings",
+        PanelKinds.CpuGraph => "CPU Graph",
         _ => Kind
     };
 

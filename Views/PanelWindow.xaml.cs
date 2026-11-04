@@ -488,6 +488,13 @@ public partial class PanelWindow : Window
             else items.Add(item);
             return;
         }
+        if (item.Kind == PanelKinds.CpuGraph)
+        {
+            int clock = items.FindLastIndex(i => i.Kind == PanelKinds.Clock);
+            if (clock >= 0) items.Insert(clock, item);
+            else items.Add(item);
+            return;
+        }
         int index = items.FindIndex(i =>
             i.Kind is PanelKinds.TaskList or PanelKinds.Spacer or PanelKinds.DesktopShifter or PanelKinds.Clock ||
             (i.Kind == PanelKinds.Separator && i.Expand));
@@ -716,6 +723,7 @@ public partial class PanelWindow : Window
         add.Items.Add(Item("Clipboard", () => AddKind(PanelKinds.Clipboard)));
         add.Items.Add(Item("Show desktop", () => AddKind(PanelKinds.ShowDesktop)));
         add.Items.Add(Item("Settings", () => AddKind(PanelKinds.Settings)));
+        add.Items.Add(Item("CPU graph", () => AddKind(PanelKinds.CpuGraph)));
         menu.Items.Add(add);
         menu.Items.Add(new Separator());
         menu.Items.Add(Item("Open crash log", Log.OpenLogs));

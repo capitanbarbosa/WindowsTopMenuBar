@@ -4,14 +4,14 @@
 
 # Windows Top Menu Bar
 
-A Kali Linux XFCE-style **top panel** and **application menu** for Windows. It reserves a strip of the desktop so maximized windows sit against the bar instead of covering it.
+A Kali Linux XFCE-style **top panel** and **application whisker menu** for Windows. It reserves a strip of the desktop so maximized windows sit against the bar instead of covering it.
 
 This is an independent project. It is not affiliated with Kali Linux or Offensive Security.
 
 ## What you get
 
 - A top AppBar with Kali-like chrome: height, color, accent, opacity, and lock
-- An application menu with search, categories, favorites, recently used, and session actions
+- A Whisker-style application menu with search, categories, favorites, recently used, and session actions
 - Reorderable panel items
 - Virtual desktops: switch, rename, add, and remove
 - Profiles, plus backup and restore from Panel settings

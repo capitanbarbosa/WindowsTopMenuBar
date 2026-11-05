@@ -1,8 +1,8 @@
 using System.Runtime.InteropServices;
-using WindowsWhisker.Models;
-using WindowsWhisker.Native;
+using WindowsTopMenuBar.Models;
+using WindowsTopMenuBar.Native;
 
-namespace WindowsWhisker.Services;
+namespace WindowsTopMenuBar.Services;
 
 public sealed class AppBarController
 {
@@ -15,7 +15,7 @@ public sealed class AppBarController
     public void Attach(IntPtr hwnd)
     {
         _hwnd = hwnd;
-        _callback = Win32.RegisterWindowMessage("WindowsWhisker.AppBar");
+        _callback = Win32.RegisterWindowMessage("WindowsTopMenuBar.AppBar");
     }
 
     public int Consume(int msg, IntPtr wParam, IntPtr lParam)

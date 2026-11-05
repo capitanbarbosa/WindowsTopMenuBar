@@ -1,9 +1,9 @@
 using System.Runtime.InteropServices;
 using System.Text;
-using WindowsWhisker.Models;
-using WindowsWhisker.Native;
+using WindowsTopMenuBar.Models;
+using WindowsTopMenuBar.Native;
 
-namespace WindowsWhisker.Services;
+namespace WindowsTopMenuBar.Services;
 
 public sealed class AppCatalogService
 {
@@ -99,7 +99,7 @@ public sealed class AppCatalogService
         });
         thread.IsBackground = true;
         thread.SetApartmentState(ApartmentState.STA);
-        thread.Name = "Whisker catalog";
+        thread.Name = "App catalog";
         thread.Start();
         return tcs.Task;
     }

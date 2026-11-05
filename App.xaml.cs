@@ -1,11 +1,11 @@
 using System.IO;
 using System.Threading;
 using System.Windows;
-using WindowsWhisker.Native;
-using WindowsWhisker.Services;
-using WindowsWhisker.Views;
+using WindowsTopMenuBar.Native;
+using WindowsTopMenuBar.Services;
+using WindowsTopMenuBar.Views;
 
-namespace WindowsWhisker;
+namespace WindowsTopMenuBar;
 
 public partial class App : Application
 {
@@ -22,7 +22,7 @@ public partial class App : Application
             Win32.AttachConsole(Win32.ATTACH_PARENT_PROCESS);
             string text = VirtualDesktopService.Instance.Describe();
             Console.WriteLine(text);
-            File.WriteAllText(Path.Combine(Path.GetTempPath(), "whisker-probe.txt"), text);
+            File.WriteAllText(Path.Combine(Path.GetTempPath(), "WindowsTopMenuBar-probe.txt"), text);
             Shutdown();
             return;
         }
@@ -30,7 +30,7 @@ public partial class App : Application
         bool created = false;
         try
         {
-            _mutex = new Mutex(true, @"Local\WindowsWhisker.Panel", out created);
+            _mutex = new Mutex(true, @"Local\WindowsTopMenuBar.Panel", out created);
         }
         catch (AbandonedMutexException)
         {
@@ -40,8 +40,8 @@ public partial class App : Application
         {
             Log.Error("already running");
             MessageBox.Show(
-                "Windows Whisker is already running.\n\nIf you do not see the bar, a crashed copy is still in memory. End WindowsWhisker.exe in Task Manager, or run Stop Windows Whisker.cmd, then start it again.",
-                "Windows Whisker",
+                "Windows Top Menu Bar is already running.\n\nIf you do not see the bar, a crashed copy is still in memory. End WindowsTopMenuBar.exe in Task Manager, or run Stop Windows Top Menu Bar.cmd, then start it again.",
+                "Windows Top Menu Bar",
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
             Shutdown();

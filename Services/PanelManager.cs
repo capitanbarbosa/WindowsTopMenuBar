@@ -1,10 +1,10 @@
 using System.Windows;
 using System.Windows.Threading;
-using WindowsWhisker.Models;
-using WindowsWhisker.Native;
-using WindowsWhisker.Views;
+using WindowsTopMenuBar.Models;
+using WindowsTopMenuBar.Native;
+using WindowsTopMenuBar.Views;
 
-namespace WindowsWhisker.Services;
+namespace WindowsTopMenuBar.Services;
 
 public sealed class PanelManager
 {

@@ -5,16 +5,41 @@ using System.Text;
 using System.Windows;
 using System.Windows.Threading;
 
-namespace WindowsWhisker.Services;
+namespace WindowsTopMenuBar.Services;
 
 public static class Log
 {
-    static readonly string Folder = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
-        "WindowsWhisker");
+    public static string DataFolder { get; } = ResolveFolder();
+    public static string FilePath { get; } = Path.Combine(DataFolder, "log.txt");
+    public static string CrashPath { get; } = Path.Combine(DataFolder, "crash.txt");
 
-    public static string FilePath { get; } = Path.Combine(Folder, "log.txt");
-    public static string CrashPath { get; } = Path.Combine(Folder, "crash.txt");
+    static string ResolveFolder()
+    {
+        var root = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+        var dir = Path.Combine(root, "WindowsTopMenuBar");
+        var legacy = Path.Combine(root, "WindowsWhisker");
+        if (!Directory.Exists(dir) && Directory.Exists(legacy))
+        {
+            try
+            {
+                Directory.Move(legacy, dir);
+            }
+            catch
+            {
+                Directory.CreateDirectory(dir);
+                foreach (var file in Directory.EnumerateFiles(legacy))
+                {
+                    var dest = Path.Combine(dir, Path.GetFileName(file)!);
+                    if (!File.Exists(dest))
+                    {
+                        try { File.Copy(file, dest); } catch { /* keep going */ }
+                    }
+                }
+            }
+        }
+        Directory.CreateDirectory(dir);
+        return dir;
+    }
 
     static int _installed;
 
@@ -61,7 +86,7 @@ public static class Log
     public static void Crash(string source, Exception? ex)
     {
         var dump = new StringBuilder();
-        dump.AppendLine("==== Windows Whisker crash ====");
+        dump.AppendLine("==== Windows Top Menu Bar crash ====");
         dump.AppendLine("time:      " + Stamp());
         dump.AppendLine("source:    " + source);
         dump.AppendLine("version:   " + Version());
@@ -83,7 +108,7 @@ public static class Log
     {
         try
         {
-            Directory.CreateDirectory(Folder);
+            Directory.CreateDirectory(DataFolder);
             if (!File.Exists(CrashPath))
                 File.WriteAllText(CrashPath, "No crash has been written yet.\n");
             Process.Start(new ProcessStartInfo
@@ -123,7 +148,7 @@ public static class Log
     {
         try
         {
-            Directory.CreateDirectory(Folder);
+            Directory.CreateDirectory(DataFolder);
             using var stream = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.ReadWrite);
             using var writer = new StreamWriter(stream, Encoding.UTF8);
             writer.WriteLine(text);

@@ -3,10 +3,10 @@ using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using WindowsWhisker.Services;
-using WindowsWhisker.Views;
+using WindowsTopMenuBar.Services;
+using WindowsTopMenuBar.Views;
 
-namespace WindowsWhisker.Controls;
+namespace WindowsTopMenuBar.Controls;
 
 public sealed class CpuGraphView : FrameworkElement
 {

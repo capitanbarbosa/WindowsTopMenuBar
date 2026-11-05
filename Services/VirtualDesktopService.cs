@@ -1,8 +1,8 @@
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
-using WindowsWhisker.Models;
+using WindowsTopMenuBar.Models;
 
-namespace WindowsWhisker.Services;
+namespace WindowsTopMenuBar.Services;
 
 /// <summary>
 /// Virtual desktops on Windows 11 24H2 / 25H2 (builds 26100 and 26200).

@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace WindowsWhisker.Native;
+namespace WindowsTopMenuBar.Native;
 
 [StructLayout(LayoutKind.Sequential)]
 public struct RECT

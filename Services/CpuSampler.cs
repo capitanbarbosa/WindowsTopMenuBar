@@ -1,6 +1,6 @@
-using WindowsWhisker.Native;
+using WindowsTopMenuBar.Native;
 
-namespace WindowsWhisker.Services;
+namespace WindowsTopMenuBar.Services;
 
 public static class CpuSampler
 {

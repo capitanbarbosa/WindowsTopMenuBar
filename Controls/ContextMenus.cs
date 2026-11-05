@@ -4,9 +4,9 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Threading;
-using WindowsWhisker.Native;
+using WindowsTopMenuBar.Native;
 
-namespace WindowsWhisker.Controls;
+namespace WindowsTopMenuBar.Controls;
 
 public static class ContextMenus
 {

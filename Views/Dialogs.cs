@@ -1,11 +1,11 @@
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
-using WindowsWhisker.Controls;
-using WindowsWhisker.Models;
-using WindowsWhisker.Services;
+using WindowsTopMenuBar.Controls;
+using WindowsTopMenuBar.Models;
+using WindowsTopMenuBar.Services;
 
-namespace WindowsWhisker.Views;
+namespace WindowsTopMenuBar.Views;
 
 public static class Dialogs
 {
@@ -28,7 +28,7 @@ public static class Dialogs
 
     public static void Alert(Window? owner, string message)
     {
-        var window = Create(owner, "Windows Whisker", 440, 180);
+        var window = Create(owner, "Windows Top Menu Bar", 440, 180);
         var text = new TextBlock { Text = message, TextWrapping = TextWrapping.Wrap, Foreground = Ui.Text, FontSize = 14, Margin = new Thickness(18, 16, 18, 8) };
         var buttons = Buttons();
         var ok = new Button { Content = "OK", Width = 90, IsDefault = true, IsCancel = true };
@@ -279,7 +279,7 @@ public static class Dialogs
 
     public static void Help(Window? owner)
     {
-        var window = Create(owner, "Windows Whisker", 520, 420);
+        var window = Create(owner, "Windows Top Menu Bar", 520, 420);
         var text = new TextBlock
         {
             Text = "This is a Kali-style panel for Windows.\n\n" +
@@ -289,7 +289,7 @@ public static class Dialogs
                    "Add launchers from the panel menu, from Panel settings, or by right-clicking an application and choosing Pin to panel. You can also drag an application out of the menu onto the bar.\n\n" +
                    "The application menu shows favorites, recently used, and all applications, with Settings and Quit along the bottom.\n\n" +
                    "The desktop shifter is the row of numbered desktops. Click one to switch, scroll to move between them, and right-click to add, rename, or remove a desktop.\n\n" +
-                   "Crashes and unexpected errors are written to %AppData%\\WindowsWhisker\\crash.txt. Everyday errors go in log.txt next to it. Right-click the bar and choose Open crash log to view the latest crash.\n\n" +
+                   "Crashes and unexpected errors are written to %AppData%\\WindowsTopMenuBar\\crash.txt. Everyday errors go in log.txt next to it. Right-click the bar and choose Open crash log to view the latest crash.\n\n" +
                    "Quit from the button in the application menu, or from the panel's right-click menu. That gives the reserved space back to Windows.",
             TextWrapping = TextWrapping.Wrap,
             Foreground = Ui.Text,

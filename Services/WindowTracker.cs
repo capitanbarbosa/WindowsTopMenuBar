@@ -1,10 +1,10 @@
 using System.Text;
 using System.Windows.Media;
 using System.Windows.Threading;
-using WindowsWhisker.Models;
-using WindowsWhisker.Native;
+using WindowsTopMenuBar.Models;
+using WindowsTopMenuBar.Native;
 
-namespace WindowsWhisker.Services;
+namespace WindowsTopMenuBar.Services;
 
 public sealed class WindowTracker
 {

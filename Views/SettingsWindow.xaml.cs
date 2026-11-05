@@ -1,12 +1,12 @@
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Win32;
-using WindowsWhisker.Controls;
-using WindowsWhisker.Models;
-using WindowsWhisker.Native;
-using WindowsWhisker.Services;
+using WindowsTopMenuBar.Controls;
+using WindowsTopMenuBar.Models;
+using WindowsTopMenuBar.Native;
+using WindowsTopMenuBar.Services;
 
-namespace WindowsWhisker.Views;
+namespace WindowsTopMenuBar.Views;
 
 public partial class SettingsWindow : Window
 {
@@ -550,18 +550,18 @@ public partial class SettingsWindow : Window
         var item = _dragItem;
         _press = null;
         _dragItem = null;
-        DragDrop.DoDragDrop(ElementList, new DataObject("WindowsWhisker.PanelItem", item.Id), DragDropEffects.Move);
+        DragDrop.DoDragDrop(ElementList, new DataObject("WindowsTopMenuBar.PanelItem", item.Id), DragDropEffects.Move);
     }
 
     void Element_DragOver(object sender, DragEventArgs e)
     {
-        e.Effects = e.Data.GetDataPresent("WindowsWhisker.PanelItem") ? DragDropEffects.Move : DragDropEffects.None;
+        e.Effects = e.Data.GetDataPresent("WindowsTopMenuBar.PanelItem") ? DragDropEffects.Move : DragDropEffects.None;
         e.Handled = true;
     }
 
     void Element_Drop(object sender, DragEventArgs e)
     {
-        if (e.Data.GetData("WindowsWhisker.PanelItem") is not string id) return;
+        if (e.Data.GetData("WindowsTopMenuBar.PanelItem") is not string id) return;
         var target = ItemAt(e.GetPosition(ElementList));
         if (target == null || target.Id == id) return;
         var items = SettingsStore.Instance.Config.Panel.Items;

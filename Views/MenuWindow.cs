@@ -3,12 +3,12 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using WindowsWhisker.Controls;
-using WindowsWhisker.Models;
-using WindowsWhisker.Native;
-using WindowsWhisker.Services;
+using WindowsTopMenuBar.Controls;
+using WindowsTopMenuBar.Models;
+using WindowsTopMenuBar.Native;
+using WindowsTopMenuBar.Services;
 
-namespace WindowsWhisker.Views;
+namespace WindowsTopMenuBar.Views;
 
 public sealed class MenuWindow : Window
 {
@@ -409,7 +409,7 @@ public sealed class MenuWindow : Window
     {
         var button = new Button
         {
-            ToolTip = "Quit Windows Whisker",
+            ToolTip = "Quit Windows Top Menu Bar",
             Margin = new Thickness(8, 0, 0, 0),
             Padding = iconOnly ? new Thickness(0) : new Thickness(8, 4, 8, 4),
             Width = iconOnly ? 32 : double.NaN,

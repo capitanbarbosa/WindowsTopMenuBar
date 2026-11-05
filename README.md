@@ -1,17 +1,17 @@
 <p align="center">
-  <img src="Assets/whisker-mark.png" width="96" alt="Windows Whisker">
+  <img src="Assets/mark.png" width="96" alt="Windows Top Menu Bar">
 </p>
 
-# Windows Whisker
+# Windows Top Menu Bar
 
-A Kali Linux XFCE-style **top panel** and **Whisker Menu** for Windows. It reserves a strip of the desktop so maximized windows sit against the bar instead of covering it.
+A Kali Linux XFCE-style **top panel** and **application menu** for Windows. It reserves a strip of the desktop so maximized windows sit against the bar instead of covering it.
 
 This is an independent project. It is not affiliated with Kali Linux or Offensive Security.
 
 ## What you get
 
 - A top AppBar with Kali-like chrome: height, color, accent, opacity, and lock
-- A Whisker-style application menu with search, categories, favorites, recently used, and session actions
+- An application menu with search, categories, favorites, recently used, and session actions
 - Reorderable panel items
 - Virtual desktops: switch, rename, add, and remove
 - Profiles, plus backup and restore from Panel settings
@@ -20,7 +20,7 @@ This is an independent project. It is not affiliated with Kali Linux or Offensiv
 
 | Item | Role |
 | --- | --- |
-| Applications menu | Opens the Whisker-style menu |
+| Applications menu | Opens the application menu |
 | Launcher | Icon shortcut to a pinned app |
 | Workspace switcher | Virtual desktop chips |
 | Clock | Date and time |
@@ -36,7 +36,7 @@ Default layout: menu, Terminal, Files, browser, workspace switcher, expanding se
 
 64-bit Windows 10 or 11. No .NET SDK needed.
 
-The latest build is on **[Releases](https://github.com/capitanbarbosa/WindowsWhisker/releases/latest)**. Download `WindowsWhisker-1.0.0-win-x64.zip`, unzip, and run `WindowsWhisker.exe`.
+The latest build is on **[Releases](https://github.com/capitanbarbosa/WindowsTopMenuBar/releases/latest)**. Download `WindowsTopMenuBar-1.0.0-win-x64.zip`, unzip, and run `WindowsTopMenuBar.exe`.
 
 Windows SmartScreen may warn on the first run because the exe is not code-signed. Choose **More info**, then **Run anyway**.
 
@@ -55,13 +55,13 @@ Or build and start the exe:
 
 ```bash
 dotnet build -c Debug
-start bin/Debug/net10.0-windows/WindowsWhisker.exe
+start bin/Debug/net10.0-windows/WindowsTopMenuBar.exe
 ```
 
 Only one instance can run. If `dotnet run` does nothing or the build fails with a file lock, the bar is already open. Right-click it and choose **Quit**, or:
 
 ```powershell
-Stop-Process -Name WindowsWhisker
+Stop-Process -Name WindowsTopMenuBar
 ```
 
 Then run again.
@@ -78,7 +78,9 @@ Settings live under **Panel**, **Items**, and Appearance.
 
 ## Files
 
-Config and logs are in `%AppData%\WindowsWhisker\`:
+Windows Top Menu Bar is an independent project and is not affiliated with Kali Linux or Offensive Security.
+
+[Privacy policy](PRIVACY.md) — config and logs stay in `%AppData%\WindowsTopMenuBar\`:
 
 | File | Purpose |
 | --- | --- |

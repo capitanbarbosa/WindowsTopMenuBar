@@ -5,12 +5,12 @@ using System.Windows.Input;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Threading;
-using WindowsWhisker.Controls;
-using WindowsWhisker.Models;
-using WindowsWhisker.Native;
-using WindowsWhisker.Services;
+using WindowsTopMenuBar.Controls;
+using WindowsTopMenuBar.Models;
+using WindowsTopMenuBar.Native;
+using WindowsTopMenuBar.Services;
 
-namespace WindowsWhisker.Views;
+namespace WindowsTopMenuBar.Views;
 
 public partial class PanelWindow : Window
 {

@@ -1,7 +1,7 @@
 using System.Windows;
 using System.Windows.Controls;
 
-namespace WindowsWhisker.Controls;
+namespace WindowsTopMenuBar.Controls;
 
 public sealed class StripPanel : Panel
 {

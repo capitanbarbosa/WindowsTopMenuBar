@@ -1,13 +1,13 @@
 using System.Diagnostics;
 using Microsoft.Win32;
-using WindowsWhisker.Models;
-using WindowsWhisker.Native;
+using WindowsTopMenuBar.Models;
+using WindowsTopMenuBar.Native;
 
-namespace WindowsWhisker.Services;
+namespace WindowsTopMenuBar.Services;
 
 public static class StartupService
 {
-    const string ValueName = "WindowsWhisker";
+    const string ValueName = "WindowsTopMenuBar";
 
     public static void Apply(bool enabled)
     {
@@ -15,6 +15,7 @@ public static class StartupService
         {
             using var key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Windows\CurrentVersion\Run", true);
             if (key == null) return;
+            key.DeleteValue("WindowsWhisker", false);
             if (!enabled)
             {
                 key.DeleteValue(ValueName, false);

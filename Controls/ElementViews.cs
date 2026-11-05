@@ -4,12 +4,12 @@ using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
-using WindowsWhisker.Models;
-using WindowsWhisker.Native;
-using WindowsWhisker.Services;
-using WindowsWhisker.Views;
+using WindowsTopMenuBar.Models;
+using WindowsTopMenuBar.Native;
+using WindowsTopMenuBar.Services;
+using WindowsTopMenuBar.Views;
 
-namespace WindowsWhisker.Controls;
+namespace WindowsTopMenuBar.Controls;
 
 public static class ElementViews
 {

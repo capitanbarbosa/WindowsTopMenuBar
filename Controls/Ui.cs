@@ -2,15 +2,15 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using WindowsWhisker.Models;
-using WindowsWhisker.Native;
-using WindowsWhisker.Services;
+using WindowsTopMenuBar.Models;
+using WindowsTopMenuBar.Native;
+using WindowsTopMenuBar.Services;
 
-namespace WindowsWhisker.Controls;
+namespace WindowsTopMenuBar.Controls;
 
 public static class Ui
 {
-    public const string AppDragFormat = "WindowsWhisker.App";
+    public const string AppDragFormat = "WindowsTopMenuBar.App";
 
     static readonly Dictionary<string, SolidColorBrush> Cache = new(StringComparer.OrdinalIgnoreCase);
 
@@ -121,7 +121,7 @@ public static class Ui
         {
             var bmp = new BitmapImage();
             bmp.BeginInit();
-            bmp.UriSource = new Uri("pack://application:,,,/Assets/whisker-mark.png", UriKind.Absolute);
+            bmp.UriSource = new Uri("pack://application:,,,/Assets/mark.png", UriKind.Absolute);
             bmp.CacheOption = BitmapCacheOption.OnLoad;
             bmp.EndInit();
             bmp.Freeze();

@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace WindowsWhisker.Models;
+namespace WindowsTopMenuBar.Models;
 
 public static class PanelKinds
 {
@@ -27,7 +27,7 @@ public static class PanelPlugins
         new(PanelKinds.Separator, "Separator", "A line that expands to fill the space between panel items.", "\uE738"),
         new(PanelKinds.Spacer, "Spacer", "Adds an empty space between panel items.", "\uE76F"),
         new(PanelKinds.Clipboard, "Clipboard", "Shortcut that opens Windows clipboard history.", "\uE8C8"),
-        new(PanelKinds.Menu, "Applications Menu", "The Whisker-style application menu.", "\uE700"),
+        new(PanelKinds.Menu, "Applications Menu", "The application menu.", "\uE700"),
         new(PanelKinds.Clock, "Clock", "Shows the date and time.", "\uE787"),
         new(PanelKinds.Settings, "Settings", "Opens panel and menu settings.", "\uE713"),
         new(PanelKinds.DesktopShifter, "Workspace Switcher", "Switch between virtual desktops.", "\uE7C1"),
@@ -111,7 +111,7 @@ public sealed class PanelItem
 
     public string Summary => Kind switch
     {
-        PanelKinds.Menu => "Whisker Menu",
+        PanelKinds.Menu => "Applications Menu",
         PanelKinds.Launcher => string.IsNullOrWhiteSpace(Label) ? "Launcher" : Label,
         PanelKinds.TaskList => "Window Buttons",
         PanelKinds.DesktopShifter => "Workspace Switcher",

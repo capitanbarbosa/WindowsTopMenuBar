@@ -1,7 +1,7 @@
 using System.Text.Json;
-using WindowsWhisker.Models;
+using WindowsTopMenuBar.Models;
 
-namespace WindowsWhisker.Services;
+namespace WindowsTopMenuBar.Services;
 
 public sealed class SettingsStore
 {
@@ -24,9 +24,7 @@ public sealed class SettingsStore
 
     SettingsStore()
     {
-        var dir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "WindowsWhisker");
-        Directory.CreateDirectory(dir);
-        _path = Path.Combine(dir, "config.json");
+        _path = Path.Combine(Log.DataFolder, "config.json");
         _saveTimer = new System.Windows.Threading.DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
         _saveTimer.Tick += (_, _) =>
         {

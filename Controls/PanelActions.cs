@@ -1,7 +1,7 @@
 using System.Windows;
-using WindowsWhisker.Models;
+using WindowsTopMenuBar.Models;
 
-namespace WindowsWhisker.Controls;
+namespace WindowsTopMenuBar.Controls;
 
 public sealed class PanelActions
 {
